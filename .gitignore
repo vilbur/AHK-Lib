@@ -1,5 +1,6 @@
 *.bak
 _vendor/*
+!_vendor/*.md
 !_vendor/Json/*
 !_vendor/*.exe
 !_vendor/*.ini
