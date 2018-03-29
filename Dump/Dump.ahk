@@ -1,50 +1,12 @@
 #SingleInstance force
+
 #Include %A_LineFile%\..\..\_vendor\LV\LTVCustomColors.ahk
 #Include %A_LineFile%\..\Lib\Obj.ahk 
-#Include %A_LineFile%\..\..\Array\Arr.ahk
 
-/*
-	// TODO: DOCUMENTATION 
-		
-	TEMP DOCUMENTATION:
-	
-	;;$object := {	"key":"value"	
-	;;	,"key2":"value2"		
-	;;	,"key3":"value4" }
-	;;
-	;$object	:= {"nested object":{"nested KEY":"nested VALUE"}}
-	;
-	;
-	;$object := {	"key":"value"
-	;	,"integer wery www": 9
-	;	,"nested object":{"nested KEY":"nested VALUE"}	
-	;	,"multi nested":{"nested KEY":{"multi KEY":"multi VALUE"}}}
-	;	
-	;	
-	;	
-	;$object2 := {	"key":"value"	
-	;	,"integer": 9
-	;	,"integer long": 9
-	;	,"iiiii": 9 
-	;	,"XXXXX": 9
-	;			,"nested object":{"nested KEY":"nested VALUE"}	
-	;			,"multi nested":{"foo key":"foo value","nested KEY":{"multi KEY":"multi VALUE"}}
-	;			;,["arrayitem_1","arrayitem_2"]
-	;			,"array":["arrayitem_1","arrayitem_2"] }
-	;
-	;	
-	;	Dump(	$object, "label1" )
-	;	Dump(	$object2, "label2" )
-	;	;Dump(	 "TEST" )
-	;	;Dump(	9999999 )			
-	;
-	
-*/
-	
 global $Dump
 
 
-;/*
+;/* This function is defined in launch file "/../Dump.ahk"
 ;	get new class object
 ;*/
 ;Dump($object,$label:="",$expand:=0){
@@ -53,7 +15,6 @@ global $Dump
 ;		
 ;	$Dump.add($object, $label,$expand)
 ;}
-
 
 
 /*
@@ -433,43 +394,3 @@ Class DumpTreeView {
 
 	
 }	
-
-/*
-  
-
-
-	$array	:= ["DUMP TEST 1", "item2"]
-	;$object := {	"key":"value"	
-	;	,"key2":"value2"		
-	;	,"key3":"value4" }
-	;
-	$object	:= {"nested object":{"nested KEY":"nested VALUE"}}
-	
-	
-	$object := {	"key":"value"
-		,"integer wery www": 9
-		,"nested object":{"nested KEY":"nested VALUE"}	
-		,"multi nested":{"nested KEY":{"multi KEY":"multi VALUE"}}}
-		
-		
-		
-	$object2 := {	"key":"value"	
-		,"integer": 9
-		,"integer long": 9
-		,"iiiii": 9
-		,"Array": $array 		
-		,"XXXXX": 9
-				,"nested object":{"nested KEY":"nested VALUE"}	
-				,"multi nested":{"foo key":"foo value","nested KEY":{"multi KEY":"multi VALUE"}}
-				;,["arrayitem_1","arrayitem_2"]
-				,"array":["arrayitem_1","arrayitem_2"] }
-	
-		
-	Dump(	$array, "array" ,1)
-	Dump(	$object2, "object2",1 )
-	Dump(	 "TEST" )
-	Dump(	9999999 )
-	
- 
-  
-  */

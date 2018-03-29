@@ -1,7 +1,7 @@
  ;;;;Define the base class.
 class _Object {
 
-	_keys := Arr() ; store keys of object, keep order of keys
+	_keys := [] ; store keys of object, keep order of keys
 
     __SET($key, $value){
 		this._keys.push($key)
@@ -11,8 +11,11 @@ class _Object {
 ;    }
     __Call($fn, $aParams*){
 
-		if($fn=="delete")
+		if($fn=="delete"){
+			
+			
 			this._keys.delete(this._keys.indexOf($aParams[1]))
+		}
     }
 	/** get array of all keys in object
 	*/
