@@ -1,0 +1,5 @@
+*.bak
+_vendor/*
+!_vendor/Json/*
+!_vendor/*.exe
+!_vendor/*.ini
