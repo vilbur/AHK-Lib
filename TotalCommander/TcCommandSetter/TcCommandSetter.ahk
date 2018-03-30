@@ -9,7 +9,6 @@ Class TcCommandSetter
 {
 	_TcCommand 	:= new TcCommand()
 	_commands	:= {} ; definition for commands
-	_prefix	:= ""	; 
 	
 	
 	/** set definition for commands
@@ -35,31 +34,19 @@ Class TcCommandSetter
 	/** Create all commands
 	 */
 	createCommands()
-	{
-		$prefix_name := RegExReplace( this._prefix, "\s+", "" ) 
-		
+	{		
 		For $command, $values in this._commands
 			this._TcCommand.clone()
-					.name( $prefix_name $command)
-					.param($values[4])
-					.menu( this._getMenuText( $values ) )
-					.tooltip( this._getTooltip( $values ) )
+					.prefix(this._prefix)
+					.cmd($command)
+					.param($values[4]*)
+					.menu($values[1])
+					.tooltip($values[2])
 					.icon($values[3])			
 					.create()
 	}
 	
-	/**
-	 */
-	_getMenuText( $values )
-	{
-		return $values[1] ? this._prefix $values[1] : ""
-	} 
-	/**
-	 */
-	_getTooltip( $values )
-	{
-		return $values[2] ? this._prefix $values[2] : ""
-	} 
+
 	
 	
 }
