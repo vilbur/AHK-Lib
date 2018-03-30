@@ -1,0 +1,4 @@
+# TcCommand  
+
+[include:\TcCommandTest.ahk]  
+  

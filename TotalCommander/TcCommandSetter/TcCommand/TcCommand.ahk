@@ -8,7 +8,6 @@ Class TCcommand
 	_usercmd_ini	:= "" ; save 
 	
 	_prefix	:= ""	
-	;_name	:= ""
 	_section	:= ""	
 	
 	_cmd	:= ""		
@@ -34,40 +33,43 @@ Class TCcommand
 		this._prefix := $prefix
 		
 		return this		
-	} 
-	;/**
-	; */
-	;name( $name )
-	;{
-	;	this._name 	:= $name
-	;	;this._shortcut	:= new TcShortcut().name(this._name)
-	;	return this 		
-	;}
+	}
 	/**
+	  * @param	string	$name of command
+	 */
+	name( $name )
+	{
+		this._section := $name 
+		return this 		
+	}
+	/**
+	  * @param	string	$cmd	cmd key in Usercmd.ini
 	 */
 	cmd( $cmd )
 	{
 		this._cmd := $cmd 
-		
 		return this 		
 	}
 	/**
+	  * @param	string	$params	any numbre of prameters, param key in Usercmd.ini
 	 */
 	param( $params* )
 	{
-		this._param 	:= $params
+		this._params 	:= $params
 
 		return this
 	}
 	/**
+	  * @param	string	$menu	menu key in Usercmd.ini
 	 */
-	menu( $menu_title )
+	menu( $menu )
 	{
-		this._menu := $menu_title
+		this._menu := $menu
 		
 		return this 		
 	}	
 	/**
+	  * @param	string	$tooltip	tooltip key in Usercmd.ini
 	 */
 	tooltip( $tooltip )
 	{
@@ -76,6 +78,7 @@ Class TCcommand
 		return this 		
 	}
 	/**
+	  * @param	string	$icon	button key in Usercmd.ini
 	 */
 	icon( $icon )
 	{
@@ -84,7 +87,7 @@ Class TCcommand
 
 		return this 		
 	}
-	/**
+	/** write command to Usercmd.ini
 	 */
 	create()
 	{
@@ -100,7 +103,7 @@ Class TCcommand
 		
 		return this
 	}
-	/**
+	/** delete command from Usercmd.ini
 	 */
 	delete( )
 	{
@@ -123,8 +126,10 @@ Class TCcommand
 	 */
 	_setSection()
 	{
-		$prefix_name := RegExReplace( this._prefix, "\s+", "" ) 
-		this._section := "em_" $prefix_name "-" this._cmd
+		$prefix_sanitized	:= RegExReplace( this._prefix, "\s+", "_" )
+		$prefix_name	:= $prefix_sanitized ? $prefix_sanitized "-" : $prefix_sanitized
+		$name	:= this._section ? this._section : this._cmd
+		this._section := "em_" $prefix_name $name
 	} 
 	/**
 	 */
@@ -157,7 +162,9 @@ Class TCcommand
 	 */
 	_getMenuValue()
 	{
-		return this._getPrefix() RegExReplace( this._cmd, "[-_]", " " ) 
+		$menu := this._menu ? this._menu : this._cmd
+		
+		return this._getPrefix() RegExReplace( $menu, "[-_]", " " ) 
 	}
 	/**
 	 */
@@ -168,9 +175,9 @@ Class TCcommand
 	/**
 	 */
 	_getParamValue()
-	{
-		if( this._param.length()>0 && this._param[1]!=""  )
-			For $i, $param in this._param
+	{		
+		if( this._params.length()>0 && this._params[1]!=""  )
+			For $i, $param in this._params
 				$params .= this._escapeParameter($param) " "
 				
 		return $params

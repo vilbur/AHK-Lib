@@ -1,38 +1,32 @@
 #SingleInstance force
-
 #Include %A_LineFile%\..\..\TcCommand.ahk
-#Include %A_LineFile%\..\..\TcShortcut.ahk
-
-/* Create command with shortcute
-*/
-$CommandCreate 	:= new TcCommand()
-
-;$CommandCreate
-;	.name("TcCommand-test")
-;	.cmd("c:\GoogleDrive\TotalComander\TcCommand-test")
-;	.param("Foo param")
-;	.menu("Menu text")
-;	.tooltip("If not defined, menu text is used")	
-;	.icon("wcmicons.dll,43")
-;	.create()
-;	.shortcut( "ctr", "shift", "alt", "win", "f12" )
-;	.create("force")		
 
 new TcCommand()
-	.name("TcCommand-escaped-path")
-	.cmd("c:\GoogleDrive\TotalComander\TcCommand-test")
-	.param("%P", "%T")
-	.menu("Escape and add trailing slash to %P and %T params")
-	.tooltip("Problems with quoting of path appear otherwise")	
+	.cmd("minimal-command")
 	.create()
 
-
-
-/* Delete command and shortcut
-  
+/* RESULT:
+[em_minimal-command]
+	menu=minimal command
+	cmd=minimal-command
+	tooltip=minimal command
+	button=%systemroot%\system32\shell32.dll,43
 */
-;$CommandDelete := new TcCommand()
 
-;$CommandDelete.name("TcCommand-test").delete()
-		;.shortcut().delete()
+new TcCommand()
+	.prefix("TcCommand")
+	.name("command-paths")
+	.cmd("c:\GoogleDrive\TotalComander\Path-to-Total-Comamnder-is-escaped")
+	.param("%P", "%T")
+	.menu("Escape and add trailing slash to %P and %T params")
+	.tooltip("Toolbar text")	
+	.create()
 	
+/* RESULT:
+[em_TcCommand-command-paths]
+	menu=TcCommand - Escape and add trailing slash to %P and %T params
+	cmd=%COMMANDER_PATH%\Path-to-Total-Comamnder-is-escaped
+	param="%P\" "%T\"      
+	tooltip=TcCommand - Toolbar text
+	button=%systemroot%\system32\shell32.dll,43
+*/ 
