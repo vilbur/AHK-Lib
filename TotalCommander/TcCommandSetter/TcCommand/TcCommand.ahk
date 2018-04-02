@@ -129,8 +129,8 @@ Class TCcommand
 	{
 		$prefix_sanitized	:= RegExReplace( this._prefix, "\s+", "_" )
 		$prefix_name	:= $prefix_sanitized ? $prefix_sanitized "-" : $prefix_sanitized
-		$name	:= this._name ? this._name : this._cmd
-		this._section := "em_" $prefix_name $name
+		;$cmd_name	:= this._name ? RegExReplace( this._name, "[-\s\\\/]+", "-" ) : this._cmd
+		this._section := "em_" $prefix_name this._getCmdName()
 	} 
 	/**
 	 */
@@ -158,14 +158,20 @@ Class TCcommand
 		return this._prefix ? this._prefix " - " : ""
 	
 	} 
-
+	/**
+	 */
+	_getCmdName()
+	{		
+		return this._name ? RegExReplace( this._name, "[-\s\\\/\[\]\(\)]+", "-" ) : this._cmd
+	}
 	/**
 	 */
 	_getMenuValue()
 	{
-		$menu := this._menu ? this._menu : this._name
+		;$menu := this._menu ? this._menu : RegExReplace( this._name, "[-\s]+", " " )
+		$menu := this._menu ? this._menu : this._name		
 		
-		return this._getPrefix() RegExReplace( $menu, "[-_]", " " ) 
+		return this._getPrefix() $menu
 	}
 	/**
 	 */
