@@ -3,12 +3,12 @@
 Class Icon extends Parent
 {
 	
-	_path_temp_dir	:= A_ScriptDir
+	_path_temp_dir	:= A_Temp
 	_dimensions	:= ["32x32", "36x24"]
 	_crop	:= ["3,6,24,24", "5,8,24,12"]
 	
 	__New(){
-		
+
 	}
 
 	/**
@@ -30,6 +30,7 @@ Class Icon extends Parent
 			this._downloadAndCropTextImage( $text )
 		
 		this._convertToIcon()
+		this._deleteTempFiles()		
 		
 		return this
 	}
@@ -75,10 +76,10 @@ Class Icon extends Parent
 	_getPanoramaParameter()
 	{
 		if( this._text.length()==1 )
-			return % this._path_temp_dir "\\" this._text[1] ".gif"
+			return % this._getTempFilePath( this._text[1] )
 			
 		For $i, $text in this._text
-			$files .= this._path_temp_dir "\\" $text ".gif,"
+			$files .= this._getTempFilePath( $text ) ","
 		
 		StringTrimRight, $files, $files, 1 
 		
@@ -88,10 +89,20 @@ Class Icon extends Parent
 	
 	/**
 	 */
-	deleteTemp(  )
+	_deleteTempFiles(  )
 	{
+		sleep, 1000
+		For $i, $text in this._text
+			FileDelete, % this._getTempFilePath( $text )
 		
 	}
+	/**
+	 */
+	_getTempFilePath( $file_name )
+	{
+		return % this._path_temp_dir "\\" $file_name ".gif"
+	} 
+	
 	
 }
   
