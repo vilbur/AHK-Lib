@@ -1,4 +1,4 @@
-#Include %A_LineFile%\..\TcShortcut\TcShortcut.ahk
+#Include %A_LineFile%\..\includes.ahk
 
 /** Class TCcommand
 */
@@ -8,7 +8,8 @@ Class TCcommand
 	_usercmd_ini	:= "" ; save 
 	
 	_prefix	:= ""	
-	_section	:= ""	
+	_name	:= ""
+	_section	:= ""		
 	
 	_cmd	:= ""		
 	_param	:= ""
@@ -39,7 +40,7 @@ Class TCcommand
 	 */
 	name( $name )
 	{
-		this._section := $name 
+		this._name := $name 
 		return this 		
 	}
 	/**
@@ -128,7 +129,7 @@ Class TCcommand
 	{
 		$prefix_sanitized	:= RegExReplace( this._prefix, "\s+", "_" )
 		$prefix_name	:= $prefix_sanitized ? $prefix_sanitized "-" : $prefix_sanitized
-		$name	:= this._section ? this._section : this._cmd
+		$name	:= this._name ? this._name : this._cmd
 		this._section := "em_" $prefix_name $name
 	} 
 	/**
@@ -162,7 +163,7 @@ Class TCcommand
 	 */
 	_getMenuValue()
 	{
-		$menu := this._menu ? this._menu : this._cmd
+		$menu := this._menu ? this._menu : this._name
 		
 		return this._getPrefix() RegExReplace( $menu, "[-_]", " " ) 
 	}
