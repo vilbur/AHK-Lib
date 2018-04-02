@@ -40,10 +40,11 @@ Class TcSelection extends TotalCommander
 
 		$item := this._getPathOnIndex($active_listbox, $index)
 
+		;MsgBox,262144,active_path, %$active_path%,3 
 		if( $item )
 			$path =  %$active_path%\%$item%
 
-		return $path
+		return $path ? [$path] : false
 	}
 
 	/**
@@ -66,12 +67,15 @@ Class TcSelection extends TotalCommander
 		$folder_test	:= $file_or_folder=="folders"
 
 		$active_listbox	:= this._Pane.getPanedHwnd()
+		;Dump($active_listbox, "active_listbox", 1)
 		$active_path	:= this._Pane.getSourcePath() ; active path does not exist if selection is in result of search E.G.: https://www.google.cz/imgres?imgurl=https%3A%2F%2Fi.ytimg.com%2Fvi%2FFvAipvYcAm0%2Fmaxresdefault.jpg&imgrefurl=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DFvAipvYcAm0&docid=-zHAQyYsPkUiGM&tbnid=PrwztdfNRjSd8M%3A&vet=10ahUKEwj40IjCj4zaAhWFF5oKHa90AEsQMwhEKAUwBQ..i&w=1280&h=720&bih=872&biw=1745&q=total%20commander%20search%20result%20feed&ved=0ahUKEwj40IjCj4zaAhWFF5oKHa90AEsQMwhEKAUwBQ&iact=mrc&uact=8
+		;Dump($active_path, "active_path", 1)
+		;sleep, 3000
 		$count_of_items	:= this._GetSelItems($active_listbox, $indexes )
-
+		
 		if( $active_path ) ; add slash if path exists
 			$active_path = %$active_path%\
-
+		
 		For $i, $index in $indexes
 		{
 			$item := this._getPathOnIndex($active_listbox, $index)
@@ -81,7 +85,7 @@ Class TcSelection extends TotalCommander
 				if($file_or_folder == "" || InStr(FileExist($path), "D") == $folder_test)
 					$selection.push( $path )
 		}
-
+		
 		return %$selection%
 	}
 	/**

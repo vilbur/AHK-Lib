@@ -15,15 +15,16 @@ Class TcPane extends TotalCommander
 		,"TOTALCMD64.EXE":	{"listbox":	"LCLListBox"	; 
 			,"index":	[14, 9]	; 
 			,"path":	"Window"}}	; 
-			
+
 	_class_nn := {} ; found class names
 	
 	__New()
 	{
 		this._init()
 		this._setPaneClasses()
-		this._setpathClasses()		
+		this._setpathClasses()
 		;Dump(this._class_nn, "this._class_nn", 1)
+	
 	}
 
 	/** @return string ClassNN of active pane
@@ -45,12 +46,19 @@ Class TcPane extends TotalCommander
 	getTargetPaneClass()
 	{
 		$source_pane	:= this.getSourcePaneClass()
-		$process_name	:= this.proccesName()
-
-		if( $process_name == "TOTALCMD.EXE")
-			return % $source_pane == "TMyListBox2" ? "TMyListBox1" : "TMyListBox2"
-		else
-			return % $source_pane == "LCLListBox2" ? "LCLListBox1" : "LCLListBox2"
+		
+		;Dump(this._class_nn, $source_pane, 1)
+		;$process_name	:= this.proccesName()
+		;if( $process_name == "TOTALCMD.EXE")
+		;	return % $source_pane == "TMyListBox2" ? "TMyListBox1" : "TMyListBox2"
+		;else
+		;	return % $source_pane == "LCLListBox2" ? "LCLListBox1" : "LCLListBox2"
+		For $pane_nn, $path_nn in this._class_nn
+			if( $pane_nn != $source_pane )
+				$target_pane := $pane_nn
+			
+		;Dump($target_pane, "target_pane", 1)
+		return $target_pane
 	}
 	/**
 	  * @param string pane 'source|target'
@@ -67,8 +75,11 @@ Class TcPane extends TotalCommander
 	 */
 	getSourcePath()
 	{
+		;Dump(this.getSourcePaneClass(), "this.getSourcePaneClass()", 1)
+		;Dump(this._class_nn[this.getSourcePaneClass()], "this._class_nn[this.getSourcePaneClass()]", 1)
 		$class_nn := this._class_nn[this.getSourcePaneClass()]
-		;MsgBox,262144,class_nn, %$class_nn%,3 
+		;Dump($class_nn, "class_nn", 1)
+		;Dump(this._getPath($class_nn), "this._getPath($class_nn)", 1)
 		return % this._getPath($class_nn)
 	}
 	/** @return string path of in active pane
@@ -83,10 +94,10 @@ Class TcPane extends TotalCommander
 	*/
 	refresh($pane:="source")
 	{
-		$dir	:= $pane == "source" ? this.getSourcePath() : this.getTargetPath()
 		$process_name	:= this._process_name
+		$dir	:= $pane == "source" ? this.getSourcePath() : this.getTargetPath()
 		$pane	:= $pane == "source" ? "L" : "R"
-
+		
 		Run, %COMMANDER_PATH%\%$process_name% /O /S /%$pane%=%$dir%
 	}
 	
@@ -94,8 +105,6 @@ Class TcPane extends TotalCommander
 	 */
 	_getPath($class_nn)
 	{
-		;Dump(this.hwnd(), "this.hwnd()", 1)
-		;Dump($class_nn, "class_nn", 1)
 		
 		ControlGetText, $path , %$class_nn%, % this.hwnd()
 		
@@ -139,13 +148,13 @@ Class TcPane extends TotalCommander
 	 */
 	_searchExistingControl( $control_name, $number )
 	{
-		$lisbox_exists := this._isControlExists($control_name $number)
-		;Dump($lisbox_exists, "lisbox_exists", 1)
-		;if( ! $lisbox_exists )
-		While, $lisbox_exists == 0
-			$lisbox_exists	:= this._isControlExists($control_name $number++)
-			
-		return $control_name $number
+		$exists := this._isControlExists($control_name $number)
+
+		;if( ! $exists )
+		While ! $exists 
+			$exists	:= this._isControlExists($control_name $number++)
+
+		return $control_name $number				
 	}
 
 	/** find if control exists
@@ -153,9 +162,9 @@ Class TcPane extends TotalCommander
 	_isControlExists($class_nn)
 	{
 		ControlGet, $is_visible, Visible, , %$class_nn%,  % this.hwnd()
-		;return $is_visible
-		;Dump($is_visible, "is_visible", 1)
-		return 
+		return $is_visible
+		;Dump($is_visible, $class_nn, 1)
+		;return $is_visible ? $class_nn : 0
 	}
 
 

@@ -1,9 +1,5 @@
 #SingleInstance force
 
-
-  
-
-
 $array	:= ["DUMP TEST 1", "item2"]
 ;$object := {	"key":"value"	
 ;	,"key2":"value2"		

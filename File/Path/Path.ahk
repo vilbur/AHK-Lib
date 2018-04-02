@@ -1,5 +1,4 @@
-#Include %A_LineFile%\..\..\..\RegEx\RegExMatchAll.ahk
-
+#Include %A_LineFile%\..\includes.ahk
 /* Class Path manipulate with path
    strips path out of quotes, and whitespace on init
    replace environment variables on init
@@ -253,7 +252,7 @@ Class Path {
 	*/
 	_replaceVariables(){
 		;MsgBox,262144,, _replaceVariables, 2
-		;if (this._RegExMatchAll( this.path, "(%[^\\\s]+%)" ).length())
+		;if (this._regExMatch_All( this.path, "(%[^\\\s]+%)" ).length())
 		;	this.path := ComObjCreate("WScript.Shell").Exec("cmd.exe /q /c echo """ this.path """").StdOut.ReadAll()
 		;
 
@@ -276,7 +275,7 @@ Class Path {
 	/** Match multiple matches
 	  @return array of  matches
 	  */
-	_RegExMatchAll($string, $regex){
+	_regExMatch_All($string, $regex){
 		$rx_pos = 1
 		$matches := Array()
 		/* IF MULTIPLE MATCHES
