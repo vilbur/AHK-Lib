@@ -1,23 +1,36 @@
-/** Class Icon
+/** Create text icon via IrfanView
 */
 Class Icon extends Parent
 {
-	
 	_path_temp_dir	:= A_Temp
 	;_path_temp_dir	:= A_ScriptDir 	
 	;_dimensions	:= ["32x32",	"30x22"]
 	_dimensions	:= ["32x32",	"30x22"]	
 	_crop	:= ["3,6,24,24",	"2,6,24,12"]
 	
-	__New(){
-
-	}
-
-	/**
+	_background	:= "white"
+	_forground	:= "black"
+	
+	/** path to icon
 	 */
 	path( $path:="" )
 	{
 		this._path := $path
+		return this
+	}
+	/**
+		@param string color $background
+		@param string color $forground		
+		
+		colors "black|white|red|green|blue"
+	 */
+	color( $background:="", $forground:="" )
+	{
+		if( $background )
+			this._background	:= $background
+		if( $forground )
+			this._forground	:= $forground		
+		
 		return this
 	} 
 	/**
@@ -27,14 +40,20 @@ Class Icon extends Parent
 		$text 	:= RegExReplace( $text, "[\s-]+", " " ) 
 		$text_split	:= StrSplit( $text, A_Space )
 		this._text	:= this._sanitizeAllStrings($text_split)
-
+		
+		return this
+	}
+	/**
+	 */
+	create()
+	{
+		;this._convertAllColors()		
+		
 		For $i, $text in this._text
 			this._downloadAndCropTextImage( $text )
 		
 		this._convertToIcon()
-		this._deleteTempFiles()		
-		
-		return this
+		this._deleteTempFiles()	
 	}
 	/**
 	 */
@@ -52,18 +71,14 @@ Class Icon extends Parent
 	 */
 	_sanitizeString( $string )
 	{
-		;StringLower, $string, $string
+		$whitepace	:= ""
 		$string	:= RegExReplace( $string, "^[_-\s]+|[[_-\s]+]$", "" )
-		;StringLen, $string_length, $string 
-		$string_length := StrLen($string )
+		$string_length	:= StrLen($string )
 
-		if( $string_length>5 ){
-			$string	:= RegExReplace( $string, "i)[aeiou]", "" )
-			;MsgBox,262144,%$string_length%, %$string%,3 
-			
-			$string	:= SubStr($string, 1, 5 )
-		}
+		if( $string_length>5 )
+			$string	:= RegExReplace( $string, "i)[aeiou]", "" )			
 
+		$string	:= SubStr( $string "++++", 1, 5 )
 		
 		return $string
 	}
@@ -72,9 +87,10 @@ Class Icon extends Parent
 	 */
 	_downloadAndCropTextImage( $text )
 	{
-		$path := this._path_temp_dir "\\" $text ".gif"
+		$path	:= this._path_temp_dir "\\" $text ".gif"
+		$colors	:=  "/" this._getColor( this._background ) "/" this._getColor( this._forground ) 
 		
-		UrlDownloadToFile, % "https://dummyimage.com/" this._dimensions[this._text.length()] "/ffffff/000000.gif&text=" $text, %$path%
+		UrlDownloadToFile, % "https://dummyimage.com/" this._dimensions[this._text.length()] $colors ".gif&text=" $text, %$path%		
 		sleep, 500
 		Run, % this.Parent()._iview_path " " $path " /crop=(" this._crop[this._text.length()] ") /convert=" $path
 		sleep, 500		
@@ -84,7 +100,6 @@ Class Icon extends Parent
 	_convertToIcon()
 	{
 		Run, % this.Parent()._iview_path " " this._getPanoramaParameter() " /transpcolor=(255,255,255) /convert=" this._path
-		;Run, % this.Parent()._iview_path " " this._getPanoramaParameter() " /convert=" this._path		
 	}	
 	/**
 	 */
@@ -100,8 +115,6 @@ Class Icon extends Parent
 		
 		return % " /panorama=(2," $files ")"
 	}
-	
-	
 	/**
 	 */
 	_deleteTempFiles()
@@ -117,7 +130,42 @@ Class Icon extends Parent
 	{
 		return % this._path_temp_dir "\\" $file_name ".gif"
 	} 
-	
-	
+	/**
+	 */
+	_getColor( $color )
+	{
+		StringLower, $color, $color
+		
+		if( $color=="black" )
+			return "000000"
+			
+		else if( $color=="white" )
+			return "ffffff"
+			
+		else if( $color=="red" )
+			return "e40000"
+		
+		else if( $color=="green" )
+			return "05e400"
+			
+		else if( $color=="blue" )
+			return "0086e4"
+
+	} 
 }
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   

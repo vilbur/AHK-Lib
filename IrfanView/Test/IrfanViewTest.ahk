@@ -2,11 +2,21 @@
 
 #Include %A_LineFile%\..\..\IrfanView.ahk
 
+$icon_dir := A_ScriptDir "\icons"
 
 $IrfanView 	:= new IrfanView()
 
 
-$IrfanView.Icon( A_ScriptDir "\Single.ico" ).text("Single")
-;$IrfanView.Icon( A_ScriptDir "\TestIcon.ico" ).text("_Text1-Text2")
+$IrfanView.Icon( $icon_dir "\Single.ico" ).text("Single").create()
 
-$IrfanView.Icon( A_ScriptDir "\longString.ico" ).text("laravel vendor")
+
+$IrfanView.Icon( $icon_dir "\longString.ico" )
+			.color("", "blue")
+			.text("LARAVEL VENDOR")
+			.create()
+			
+
+$IrfanView.Icon( $icon_dir "\green.ico" )
+			.color("green")
+			.text("green icon")
+			.create()

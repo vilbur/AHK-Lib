@@ -18,7 +18,7 @@ Class IrfanView
 	 */
 	Icon( $path )
 	{
-		return % this._Icon.path($path)
+		return % this._Icon.clone().path($path)
 	}
 	/**
 	 */
