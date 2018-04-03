@@ -5,20 +5,23 @@
 Class TcPane extends TotalCommander
 {
 	
-	/* Total commander has different classes for 32-bit & 64-bit version.
-	   Numbers of these controls are changing too
-	  
+	/* File tree & curretn path has has dynamic classes,
+	   They are different for 32-bit & 64-bit version.
+			They are changing if:
+				"Separate tree"	is visible
+				"FTP connection"	is visible				
+	   	  
 			TC version	  File tree	  Path
 			--------------	---------------	----------------
 			TOTALCMD64.EXE	LCLListBox(5-1)	Window(17-9)
 			TOTALCMD.EXE	TMyListBox(2-1)	TPathPanel(2-1)
 			
-	  */
+  */
 	_class_names :=	{"TOTALCMD.EXE":	{"listbox":	"TMyListBox"	;
-			,"index":	[2, 1]
+			,"index":	[2, 1]	; [index of first control, value to remove for next control]
 			,"path":	"TPathPanel"}	; 
 		,"TOTALCMD64.EXE":	{"listbox":	"LCLListBox"	;
-			,"index":	[17, 12]	; 
+			,"index":	[17, 5]	; [index of first control, value to remove for next control]
 			,"path":	"Window"}}	; 
 
 	_class_nn := {} ; found class names
@@ -136,16 +139,26 @@ Class TcPane extends TotalCommander
 	{
 		$class_name	:= this._class_names[this.proccesName()].path
 		$indexes	:= this._class_names[this.proccesName()].index
-
-		;Dump($class_name, "class_name", 1)
-		;$last_index := 17
-
+		$panes_nn	:= []
+		
 		For $pane_nn, $path_nn in this._class_nn
-		{
-			$last_index := this._searchExistingControl( $class_name, $indexes[A_Index] )			
-			this._class_nn[$pane_nn] := $class_name ($last_index +1)
-		}
+			$panes_nn.push($pane_nn)
+		
+		$last_index := this._searchExistingControl( $class_name, $indexes[1] )	+ 1		
+
+		if( this._isDiskSpaceControl( $class_name $last_index ) )
+			$last_index--
+		
+		this._class_nn[$panes_nn[1]] := $class_name $last_index
+		this._class_nn[$panes_nn[2]] := $class_name ($last_index - $indexes[2] )	
 	}
+	/**
+	 */
+	_isDiskSpaceControl( $class_name )
+	{
+		ControlGetText, $text , %$class_name%, % this.hwnd()
+		return RegExMatch( $text, "i)free$" )
+	} 
 	/** serach for number of control
 		E.G.: LCLListBox1, LCLListBox2, LCLListBox3
 	 */

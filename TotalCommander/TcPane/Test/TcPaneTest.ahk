@@ -1,3 +1,5 @@
+#SingleInstance force
+
 #Include %A_LineFile%\..\..\TcPane.ahk
 
 $TcPane := new TcPane()
