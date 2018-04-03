@@ -4,8 +4,10 @@ Class Icon extends Parent
 {
 	
 	_path_temp_dir	:= A_Temp
-	_dimensions	:= ["32x32", "36x24"]
-	_crop	:= ["3,6,24,24", "5,8,24,12"]
+	;_path_temp_dir	:= A_ScriptDir 	
+	;_dimensions	:= ["32x32",	"30x22"]
+	_dimensions	:= ["32x32",	"30x22"]	
+	_crop	:= ["3,6,24,24",	"2,6,24,12"]
 	
 	__New(){
 
@@ -24,7 +26,7 @@ Class Icon extends Parent
 	{
 		$text 	:= RegExReplace( $text, "[\s-]+", " " ) 
 		$text_split	:= StrSplit( $text, A_Space )
-		this._text	:= this._sanitizeStrings($text_split)
+		this._text	:= this._sanitizeAllStrings($text_split)
 
 		For $i, $text in this._text
 			this._downloadAndCropTextImage( $text )
@@ -36,20 +38,35 @@ Class Icon extends Parent
 	}
 	/**
 	 */
-	_sanitizeStrings( $strings )
+	_sanitizeAllStrings( $strings )
 	{
 		$sanitized := []
 		
 		For $i, $string in $strings
-		{
-			$string := RegExReplace( $string, "^[_-\s]+|[[_-\s]+]$", "" )
-			StringLower, $string, $string
-			
-			if( $string )
-				$sanitized.push($string)
-		}
+			$sanitized.push(this._sanitizeString($string))
+		
 		return $sanitized
-	} 
+	}
+	/** remove dashes
+	  * remove [aeiou] if string is longer then 5 chars   
+	 */
+	_sanitizeString( $string )
+	{
+		;StringLower, $string, $string
+		$string	:= RegExReplace( $string, "^[_-\s]+|[[_-\s]+]$", "" )
+		;StringLen, $string_length, $string 
+		$string_length := StrLen($string )
+
+		if( $string_length>5 ){
+			$string	:= RegExReplace( $string, "i)[aeiou]", "" )
+			;MsgBox,262144,%$string_length%, %$string%,3 
+			
+			$string	:= SubStr($string, 1, 5 )
+		}
+
+		
+		return $string
+	}
 	
 	/**
 	 */
@@ -66,10 +83,8 @@ Class Icon extends Parent
 	 */
 	_convertToIcon()
 	{
-		;Dump(this._getPanoramaParameter(), "this._getPanoramaParameter()", 1)
-		;Dump(this._path, "this._path", 1)
-		
-		Run, % this.Parent()._iview_path " " this._getPanoramaParameter() " /convert=" this._path
+		Run, % this.Parent()._iview_path " " this._getPanoramaParameter() " /transpcolor=(255,255,255) /convert=" this._path
+		;Run, % this.Parent()._iview_path " " this._getPanoramaParameter() " /convert=" this._path		
 	}	
 	/**
 	 */
@@ -89,7 +104,7 @@ Class Icon extends Parent
 	
 	/**
 	 */
-	_deleteTempFiles(  )
+	_deleteTempFiles()
 	{
 		sleep, 1000
 		For $i, $text in this._text
