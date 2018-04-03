@@ -2,9 +2,9 @@
 
 #Include %A_LineFile%\..\..\IrfanView.ahk
 
-$icon_dir := A_ScriptDir "\icons"
-
 $IrfanView 	:= new IrfanView()
+$icon_dir := A_ScriptDir "\generated-icons"
+
 
 
 $IrfanView.Icon( $icon_dir "\Single.ico" ).text("Single").create()

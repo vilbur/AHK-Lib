@@ -2,9 +2,8 @@
 */
 Class Icon extends Parent
 {
-	_path_temp_dir	:= A_Temp
+	_path_temp_dir	:= A_Temp "\IrfanView\icons"
 	;_path_temp_dir	:= A_ScriptDir 	
-	;_dimensions	:= ["32x32",	"30x22"]
 	_dimensions	:= ["32x32",	"30x22"]	
 	_crop	:= ["3,6,24,24",	"2,6,24,12"]
 	
@@ -46,9 +45,7 @@ Class Icon extends Parent
 	/**
 	 */
 	create()
-	{
-		;this._convertAllColors()		
-		
+	{		
 		For $i, $text in this._text
 			this._downloadAndCropTextImage( $text )
 		

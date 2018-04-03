@@ -8,12 +8,17 @@ Class TcPane extends TotalCommander
 	/* Total commander has different classes for 32-bit & 64-bit version.
 	   Numbers of these controls are changing too
 	  
+			TC version	  File tree	  Path
+			--------------	---------------	----------------
+			TOTALCMD64.EXE	LCLListBox(5-1)	Window(17-9)
+			TOTALCMD.EXE	TMyListBox(2-1)	TPathPanel(2-1)
+			
 	  */
-	_class_names :=	{"TOTALCMD.EXE":	{"listbox":	"TMyListBox"	; 
-			,"path":	"TPathPanel"	; 
-			,"index":	[2, 1]}	; 
-		,"TOTALCMD64.EXE":	{"listbox":	"LCLListBox"	; 
-			,"index":	[14, 9]	; 
+	_class_names :=	{"TOTALCMD.EXE":	{"listbox":	"TMyListBox"	;
+			,"index":	[2, 1]
+			,"path":	"TPathPanel"}	; 
+		,"TOTALCMD64.EXE":	{"listbox":	"LCLListBox"	;
+			,"index":	[17, 12]	; 
 			,"path":	"Window"}}	; 
 
 	_class_nn := {} ; found class names
@@ -23,8 +28,7 @@ Class TcPane extends TotalCommander
 		this._init()
 		this._setPaneClasses()
 		this._setpathClasses()
-		;Dump(this._class_nn, "this._class_nn", 1)
-	
+		Dump(this._class_nn, "this._class_nn", 1)
 	}
 
 	/** @return string ClassNN of active pane
@@ -36,7 +40,7 @@ Class TcPane extends TotalCommander
 		WinActivate, % this.hwnd()
 
 		ControlGetFocus, $source_pane, % this.hwnd()
-
+		
 		this._restorePreviousWindow()
 
 		return %$source_pane%
@@ -46,18 +50,12 @@ Class TcPane extends TotalCommander
 	getTargetPaneClass()
 	{
 		$source_pane	:= this.getSourcePaneClass()
-		
-		;Dump(this._class_nn, $source_pane, 1)
-		;$process_name	:= this.proccesName()
-		;if( $process_name == "TOTALCMD.EXE")
-		;	return % $source_pane == "TMyListBox2" ? "TMyListBox1" : "TMyListBox2"
-		;else
-		;	return % $source_pane == "LCLListBox2" ? "LCLListBox1" : "LCLListBox2"
+		;MsgBox,262144,source_pane, %$source_pane%
 		For $pane_nn, $path_nn in this._class_nn
 			if( $pane_nn != $source_pane )
 				$target_pane := $pane_nn
-			
-		;Dump($target_pane, "target_pane", 1)
+		
+		;MsgBox,262144,target_pane, %$target_pane%		
 		return $target_pane
 	}
 	/**
@@ -75,11 +73,8 @@ Class TcPane extends TotalCommander
 	 */
 	getSourcePath()
 	{
-		;Dump(this.getSourcePaneClass(), "this.getSourcePaneClass()", 1)
-		;Dump(this._class_nn[this.getSourcePaneClass()], "this._class_nn[this.getSourcePaneClass()]", 1)
 		$class_nn := this._class_nn[this.getSourcePaneClass()]
-		;Dump($class_nn, "class_nn", 1)
-		;Dump(this._getPath($class_nn), "this._getPath($class_nn)", 1)
+
 		return % this._getPath($class_nn)
 	}
 	/** @return string path of in active pane
@@ -100,7 +95,6 @@ Class TcPane extends TotalCommander
 		
 		Run, %COMMANDER_PATH%\%$process_name% /O /S /%$pane%=%$dir%
 	}
-	
 	/**
 	 */
 	_getPath($class_nn)
@@ -122,48 +116,61 @@ Class TcPane extends TotalCommander
 		GET CLASS NAMES
 	-----------------------------------------
 	*/
-	/** search for existing classes for file listbox
-		LCLListBox\d | TMyListBox\d
+	/** search for existing classes for file tree
+		TMyListBox(2-1) | LCLListBox(5-1)
 	 */
 	_setPaneClasses()
 	{
+		$class_name := this._class_names[this.proccesName()].listbox
+		$last_index := 5
 		Loop, 2
 		{
-			$listbox_class := this._searchExistingControl( this._class_names[this.proccesName()].listbox, A_Index )
-			this._class_nn[$listbox_class]	:= {}
+			$last_index := this._searchExistingControl( $class_name, $last_index )
+			this._class_nn[$class_name ($last_index +1)] := {}
 		}
 	}
 	/** search for existing classes for current path
-		TPathPanel\d | Window\d
+		TPathPanel(2-1) | Window(17-9)
 	 */
 	_setpathClasses(  )
 	{
-		$indexes := this._class_names[this.proccesName()].index
-		
+		$class_name	:= this._class_names[this.proccesName()].path
+		$indexes	:= this._class_names[this.proccesName()].index
+
+		;Dump($class_name, "class_name", 1)
+		;$last_index := 17
+
 		For $pane_nn, $path_nn in this._class_nn
-			this._class_nn[$pane_nn] := this._searchExistingControl( this._class_names[this.proccesName()].path, $indexes[A_Index] )
+		{
+			$last_index := this._searchExistingControl( $class_name, $indexes[A_Index] )			
+			this._class_nn[$pane_nn] := $class_name ($last_index +1)
+		}
 	}
 	/** serach for number of control
 		E.G.: LCLListBox1, LCLListBox2, LCLListBox3
 	 */
 	_searchExistingControl( $control_name, $number )
 	{
-		$exists := this._isControlExists($control_name $number)
-
-		;if( ! $exists )
-		While ! $exists 
-			$exists	:= this._isControlExists($control_name $number++)
-
-		return $control_name $number				
+		;$exists := this._isControlExists($control_name $number)
+		;$number++
+		While $number>0
+			;$exists	:= this._isControlExists($control_name $number--)
+			if( this._isControlExists($control_name $number--) ) 
+				break
+				
+		;Dump($number, "number", 1)
+		return $number			
 	}
 
 	/** find if control exists
 	 */
 	_isControlExists($class_nn)
 	{
+		;Dump($class_nn, "class_nn", 1)
 		ControlGet, $is_visible, Visible, , %$class_nn%,  % this.hwnd()
-		return $is_visible
+		;ControlGet, $is_visible, Hwnd , , %$class_nn%,  % this.hwnd()		
 		;Dump($is_visible, $class_nn, 1)
+		return $is_visible
 		;return $is_visible ? $class_nn : 0
 	}
 
