@@ -25,8 +25,9 @@ Class TcPane extends TotalCommander
 			,"index":	[17, 5]	; [index of first control, value to remove for next control]
 			,"path":	"Window"}}	; 
 
-	_class_nn := {} ; found class names
-	
+	_class_nn	:= {} ; found class names
+	_active_pane	:= ""
+
 	__New()
 	{
 		this._init()
@@ -34,19 +35,33 @@ Class TcPane extends TotalCommander
 		this._setpathClasses()
 		this._setListBoxAndPathToPair()
 	}
-
+	/**
+	 */
+	setActivePane()
+	{
+		this._active_pane := this.getPaneSide()
+		return this
+	}
+	/**
+	 */
+	getActivePane()
+	{
+		return % this._active_pane
+	}
 	/** @return string ClassNN of active pane
 	 */
 	getSourcePaneClass()
 	{
 		this._saveActiveWindow()
 
+		WinSet, AlwaysOnTop, On, A
+		
 		WinActivate, % this.hwnd()
 
 		ControlGetFocus, $source_pane, % this.hwnd()
 		
 		this._restorePreviousWindow()
-
+		
 		return %$source_pane%
 	}
 	/** @return string ClassNN of active pane
@@ -165,7 +180,7 @@ Class TcPane extends TotalCommander
 	/** search for existing classes for current path
 		TPathPanel(2-1) | Window(17-9)
 	 */
-	_setpathClasses(  )
+	_setpathClasses()
 	{
 		$class_name	:= this._class_names[this.proccesName()].path
 		$indexes	:= this._class_names[this.proccesName()].index

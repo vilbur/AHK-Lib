@@ -4,7 +4,7 @@ Class TotalCommander
 {
 	_process_name	:= ""
 	_hwnd	:= ""
-	_previous_vindow	:= ""
+	_previous_vindow	:= {"ahk_id":"","onTopState":""}
 
 	/**
 	 */
@@ -28,6 +28,7 @@ Class TotalCommander
 	/**
 	 */
 	proccesName()
+	
 	{
 		return % this._process_name
 	}
@@ -45,19 +46,30 @@ Class TotalCommander
 		WinGet, $hwnd , ID, ahk_class TTOTAL_CMD
 		this._hwnd := $hwnd
 	}
-	/**
+	/** Store id and and state of always on top for resotrion
 	 */
 	_saveActiveWindow()
 	{
-		this._preview_vindow := WinActive("A")
+		this._previous_vindow :=	{"ahk_id" :	WinActive("A")
+			,"onTopState":	this._isWindowALwaysOnTop()}
+	}
+	/** Activate & restore always on top state of previous window
+	 */
+	_restorePreviousWindow()
+	{		
+		if this._previous_vindow
+		   WinActivate, % "ahk_id " this._previous_vindow.ahk_id
+				
+		$onTopState := this._previous_vindow.onTopState ? "On" : "Off"
+		WinSet, AlwaysOnTop, %$onTopState%, A
 	}
 	/**
 	 */
-	_restorePreviousWindow()
+	_isWindowALwaysOnTop()
 	{
-		if this._previous_vindow
-		   WinActivate, ahk_id this._previous_vindow
-	}
+		WinGet, ExStyle, ExStyle, A
+		return (ExStyle & 0x8) == 8 ? true : false
+	} 
 
 
 
