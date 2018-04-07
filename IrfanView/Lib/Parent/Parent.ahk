@@ -1,6 +1,6 @@
 ﻿/** Parent Class allows acces to parnt froom child classes
 */
-Class Parent
+Class Parent_iv
 {
 	static _Parent := {"address":""}
 

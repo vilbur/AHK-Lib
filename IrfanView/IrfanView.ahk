@@ -1,5 +1,4 @@
-#Include %A_LineFile%\..\Lib\Parent\Parent.ahk
-#Include %A_LineFile%\..\Lib\Icon.ahk
+#Include %A_LineFile%\..\Lib\Includes.ahk
 /** Class IrfanView
 */
 Class IrfanView
@@ -10,6 +9,7 @@ Class IrfanView
 	__New()
 	{
 		$iViewPath	= %COMMANDER_PATH%\_Utilities\IrfanView\i_view64.exe
+		;$iViewPath	= c:\GoogleDrive\TotalComander\_Utilities\IrfanView\i_view64.exe		
 		this._iview_path	:= $iViewPath
 		
 		this._Icon.iViewPath( $iViewPath )

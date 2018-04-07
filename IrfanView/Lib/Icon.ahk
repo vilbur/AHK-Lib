@@ -1,9 +1,9 @@
 /** Create text icon via IrfanView
 */
-Class Icon extends Parent
+Class Icon extends Parent_iv
 {
-	_path_temp_dir	:= A_Temp "\IrfanView\icons"
-	;_path_temp_dir	:= A_ScriptDir 	
+	;_path_temp_dir	:= A_Temp "\IrfanView\icons"
+	_path_temp_dir	:= A_ScriptDir 	
 	_dimensions	:= ["32x32",	"30x22"]	
 	_crop	:= ["3,6,24,24",	"2,6,24,12"]
 	
@@ -75,7 +75,7 @@ Class Icon extends Parent
 		if( $string_length>5 )
 			$string	:= RegExReplace( $string, "i)[aeiou]", "" )			
 
-		$string	:= SubStr( $string "++++", 1, 5 )
+		;$string	:= SubStr( $string "++++", 1, 5 )
 		
 		return $string
 	}
@@ -89,13 +89,15 @@ Class Icon extends Parent
 		
 		UrlDownloadToFile, % "https://dummyimage.com/" this._dimensions[this._text.length()] $colors ".gif&text=" $text, %$path%		
 		sleep, 500
+
 		Run, % this.Parent()._iview_path " " $path " /crop=(" this._crop[this._text.length()] ") /convert=" $path
-		sleep, 500		
+		;sleep, 500		
 	}
-	/**
+	/** Merge temp images, set transparent color, save to final icon file
 	 */
 	_convertToIcon()
 	{
+		
 		Run, % this.Parent()._iview_path " " this._getPanoramaParameter() " /transpcolor=(255,255,255) /convert=" this._path
 	}	
 	/**
