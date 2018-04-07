@@ -91,7 +91,7 @@ Class TcPane extends TotalCommander
 	/** get side of pane
 	  * @return string "left|right"
 	 */
-	getPanedSide($pane:="source")
+	getPaneSide($pane:="source")
 	{
 		;Dump(this._class_nn, "this._class_nn", 1)
 		$class_nn := this._getPaneClass( $pane )

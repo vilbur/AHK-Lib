@@ -14,5 +14,5 @@ Dump($TcPane.getTargetPath(), "getTargetPath()", 1)
 Dump($TcPane.getPanedHwnd(),	"getPanedHwnd('source')", 1)
 Dump($TcPane.getPanedHwnd("target"),	"getPanedHwnd('target')", 1)
 
-Dump($TcPane.getPanedSide(),	"getPanedSide('source')", 1)
-Dump($TcPane.getPanedSide("target"),	"getPanedSide('target')", 1)
+Dump($TcPane.getPaneSide(),	"getPaneSide('source')", 1)
+Dump($TcPane.getPaneSide("target"),	"getPaneSide('target')", 1)
