@@ -54,12 +54,11 @@ Class TcPane extends TotalCommander
 	getTargetPaneClass()
 	{
 		$source_pane	:= this.getSourcePaneClass()
-		;MsgBox,262144,source_pane, %$source_pane%
+
 		For $pane_nn, $path_nn in this._class_nn
 			if( $pane_nn != $source_pane )
 				$target_pane := $pane_nn
 		
-		;MsgBox,262144,target_pane, %$target_pane%		
 		return $target_pane
 	}
 	/**
@@ -67,7 +66,7 @@ Class TcPane extends TotalCommander
 	 */
 	getPanedHwnd( $pane:="source" )
 	{
-		$class_nn := $pane == "source" ? this.getSourcePaneClass() : this.getTargetPaneClass()
+		$class_nn := this.getSourcePaneClass( $pane )
 
 		ControlGet, $hwnd, Hwnd  ,, %$class_nn%, % this.hwnd()
 
@@ -89,14 +88,17 @@ Class TcPane extends TotalCommander
 
 		return % this._getPath($class_nn)
 	}
-	/**
+	/** get side of pane
+	  * @return string "left|right"
 	 */
 	getPanedSide($pane:="source")
 	{
-		Dump(this._class_nn, "this._class_nn", 1)
-		$source_pane	:= this.getSourcePaneClass()
-		Dump($source_pane, "source_pane", 1)
-		
+		;Dump(this._class_nn, "this._class_nn", 1)
+		$class_nn := this._getPaneClass( $pane )
+
+		For $pane_class, $path_class in this._class_nn
+			if( $pane_class==$class_nn )
+				return A_Index == 1 ? "right" : "left"
 	}
 	/** refresh pane
 	*/
@@ -112,14 +114,14 @@ Class TcPane extends TotalCommander
 	 */
 	_getPath($class_nn)
 	{
-		
+		;Dump($cqlass_nn, "class_nn", 1)
 		ControlGetText, $path , %$class_nn%, % this.hwnd()
-		
-		if( ! $path )
-		{
-			RegExMatch( $class_nn, "i)([^\d]+)(\d+)", $class_nn_match )
-			return this._getPath( $class_nn_match1 ($class_nn_match2 + 1) )
-		}
+		;Dump($path, "path", 1)
+		;if( ! $path )
+		;{
+		;	RegExMatch( $class_nn, "i)([^\d]+)(\d+)", $class_nn_match )
+		;	return this._getPath( $class_nn_match1 ($class_nn_match2 + 1) )
+		;}
 
 		SplitPath, $path,, $path_dir ; remove mask liek "*.*" from end of path
 
@@ -151,7 +153,7 @@ Class TcPane extends TotalCommander
 		{
 			$last_index := this._searchExistingControl( $class_name, $last_index )
 			ControlGetText, $text , % $class_name $last_index , % this.hwnd()
-			Dump($text, $class_name $last_index " - text", 1)
+
 			if( $text )
 				$last_index--
 			else
@@ -176,14 +178,13 @@ Class TcPane extends TotalCommander
 		
 		this._class_nn[$panes_nn[1]] := $class_name $last_index
 		this._class_nn[$panes_nn[2]] := $class_name ($last_index - $indexes[2] )
-		
 	}
 	/**
 	 */
 	_isDiskSpaceControl( $class_name )
 	{
 		ControlGetText, $text , %$class_name%, % this.hwnd()
-		Dump($text, $class_name, 1)
+
 		return RegExMatch( $text, "i)free$" )
 	} 
 	/** serach for number of control
@@ -192,12 +193,11 @@ Class TcPane extends TotalCommander
 	_searchExistingControl( $control_name, $number )
 	{
 		While $number>0
-			;$exists	:= this._isControlExists($control_name $number--)
 			if( this._isControlExists($control_name $number) )
 				break
 			else
 				$number--
-		;Dump($number, "number", 1)
+
 		return $number 		
 	}
 
@@ -206,7 +206,7 @@ Class TcPane extends TotalCommander
 	_isControlExists($class_nn)
 	{
 		ControlGet, $is_visible, Visible, , %$class_nn%,  % this.hwnd()
-		;Dump($is_visible, $class_nn " is_visible", 1)
+
 		return $is_visible
 	}
 	/** Pair LEFT "file listbox" with left "path" and vice versa
@@ -238,6 +238,13 @@ Class TcPane extends TotalCommander
 			$panes_nn.push($pane_nn)
 		
 		return $panes_nn	
+	}
+	/** get class of pane by "source|target"
+	  * @param string $pane  "source|target"
+	  */
+	_getPaneClass( $pane )
+	{
+		return % $pane == "source" ? this.getSourcePaneClass() : this.getTargetPaneClass()
 	} 
 
 
