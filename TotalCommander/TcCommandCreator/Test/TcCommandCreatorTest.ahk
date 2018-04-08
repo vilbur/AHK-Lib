@@ -1,8 +1,8 @@
 #SingleInstance force
-#Include %A_LineFile%\..\..\TcCommand.ahk
+#Include %A_LineFile%\..\..\TcCommandCreator.ahk
 
-new TcCommand()
-	.cmd("minimal-command")
+new TcCommandCreator()
+	.cmd("TcCommandCreator-minimal-config")
 	.create()
 
 /* RESULT:
@@ -13,8 +13,8 @@ new TcCommand()
 	button=%systemroot%\system32\shell32.dll,43
 */
 
-new TcCommand()
-	.prefix("TcCommand")
+new TcCommandCreator()
+	.prefix("TcCommandCreator")
 	.name("command-paths")
 	.cmd("c:\GoogleDrive\TotalComander\Path-to-Total-Comamnder-is-escaped")
 	.param("%P", "%T")
@@ -24,9 +24,9 @@ new TcCommand()
 	
 /* RESULT:
 [em_TcCommand-command-paths]
-	menu=TcCommand - Escape and add trailing slash to %P and %T params
+	menu=TcCommandCreator - Escape and add trailing slash to %P and %T params
 	cmd=%COMMANDER_PATH%\Path-to-Total-Comamnder-is-escaped
 	param="%P\" "%T\"      
-	tooltip=TcCommand - Toolbar text
+	tooltip=TcCommandCreator - Toolbar text
 	button=%systemroot%\system32\shell32.dll,43
 */ 

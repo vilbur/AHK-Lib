@@ -1,4 +1,0 @@
-# TcCommand  
-
-[include:\TcCommandTest.ahk]  
-  

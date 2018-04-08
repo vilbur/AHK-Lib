@@ -1,4 +1,4 @@
-#Include %A_LineFile%\..\TcCommand\TcCommand.ahk
+#Include %A_LineFile%\..\..\TcCommandCreator.ahk
 
 /** TcCommandSetter
   *
@@ -7,9 +7,8 @@
   */
 Class TcCommandSetter
 {
-	_TcCommand 	:= new TcCommand()
+	_TcCommandCreator 	:= new TcCommandCreator()
 	_commands	:= {} ; definition for commands
-	
 	
 	/** set definition for commands
 	  *
@@ -30,13 +29,12 @@ Class TcCommandSetter
 		
 		return this		
 	} 
-	
 	/** Create all commands
 	 */
 	createCommands()
 	{		
 		For $command, $values in this._commands
-			this._TcCommand.clone()
+			this._TcCommandCreator.clone()
 					.prefix(this._prefix)
 					.cmd($command)
 					.param($values[4]*)
@@ -45,9 +43,6 @@ Class TcCommandSetter
 					.icon($values[3])			
 					.create()
 	}
-	
 
-	
-	
 }
 

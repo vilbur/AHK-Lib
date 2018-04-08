@@ -1,8 +1,8 @@
 #Include %A_LineFile%\..\includes.ahk
 
-/** Class TCcommand
+/** Class TcCommandCreator
 */
-Class TCcommand
+Class TcCommandCreator
 {
 	_commander_path	:= ""	
 	_usercmd_ini	:= "" ; save 
@@ -121,8 +121,6 @@ Class TCcommand
 		
 		return this._shortcut
 	}
-	
-
 	/**
 	 */
 	_setSection()

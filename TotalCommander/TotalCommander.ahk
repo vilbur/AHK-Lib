@@ -28,7 +28,6 @@ Class TotalCommander
 	/**
 	 */
 	proccesName()
-	
 	{
 		return % this._process_name
 	}
