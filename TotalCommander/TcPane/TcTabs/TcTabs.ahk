@@ -23,10 +23,8 @@ Class TcTabs
 			Loop Parse, $tabs_ini, `n
 				this._setTab( $tabs, this._parseLine(A_LoopField)* )
 				
-		this._setActiveTabs( $tabs )
+		this._setActiveTabs( $tabs, $side )
 		
-		;Dump($tabs, "tabs", 1)
-		;MsgBox,262144,, % $tabs_ini.length,2
 		return $tabs
 	}
 	/**
@@ -52,9 +50,12 @@ Class TcTabs
 	}
 	/**
 	 */
-	_setActiveTabs( ByRef $tabs )
+	_setActiveTabs( ByRef $tabs, $side )
 	{
-		$active_tab :=	{"path":	this.Parent().getPath("right")
+		IniRead, $current_path, % this.Parent()._wincmd_ini, %$side%, path
+
+		
+		$active_tab :=	{"path":	$current_path
 			,"options":	"1|0|0|0|0|2|0"}
 		
 		if( $tabs.active.activecaption )
