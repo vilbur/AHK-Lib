@@ -4,6 +4,7 @@
 */
 Class TcPane extends TotalCommander
 {
+	_TcTabs 	:= new TcTabs().Parent(this)
 	
 	/* Getting of controls class is tricky, because Total commander is changing then dynamically
 	   
@@ -89,11 +90,18 @@ Class TcPane extends TotalCommander
 	}
 	/** @return string path of active pane
 	 */
+	getPath($side:="left")
+	{
+		return % $side == this.getPaneSide("source") ? this.getSourcePath() : this.getTargetPath()
+	}
+	
+	/** @return string path of active pane
+	 */
 	getSourcePath()
 	{
 		$class_nn := this._class_nn[this.getSourcePaneClass()]
 
-		return % this._getPath($class_nn)
+		return % this._getPathFromControl($class_nn)
 	}
 	/** @return string path of in active pane
 	 */
@@ -101,7 +109,7 @@ Class TcPane extends TotalCommander
 	{
 		$class_nn := this._class_nn[this.getTargetPaneClass()]
 
-		return % this._getPath($class_nn)
+		return % this._getPathFromControl($class_nn)
 	}
 	/** get side of pane
 	  * @return string "left|right"
@@ -127,7 +135,7 @@ Class TcPane extends TotalCommander
 	}
 	/**
 	 */
-	_getPath($class_nn)
+	_getPathFromControl($class_nn)
 	{
 		;Dump($cqlass_nn, "class_nn", 1)
 		ControlGetText, $path , %$class_nn%, % this.hwnd()
@@ -135,7 +143,7 @@ Class TcPane extends TotalCommander
 		;if( ! $path )
 		;{
 		;	RegExMatch( $class_nn, "i)([^\d]+)(\d+)", $class_nn_match )
-		;	return this._getPath( $class_nn_match1 ($class_nn_match2 + 1) )
+		;	return this._getPathFromControl( $class_nn_match1 ($class_nn_match2 + 1) )
 		;}
 
 		SplitPath, $path,, $path_dir ; remove mask liek "*.*" from end of path
@@ -262,7 +270,12 @@ Class TcPane extends TotalCommander
 		return % $pane == "source" ? this.getSourcePaneClass() : this.getTargetPaneClass()
 	} 
 
-
+	/** get TcTabs
+	 */
+	TcTabs()
+	{
+		return % this._TcTabs
+	} 
 
 
 

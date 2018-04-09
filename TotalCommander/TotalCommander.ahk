@@ -4,12 +4,16 @@ Class TotalCommander
 {
 	_process_name	:= ""
 	_hwnd	:= ""
+	_wincmd_ini	:= ""
 	_previous_vindow	:= {"ahk_id":"","onTopState":""}
 
 	/**
 	 */
 	_init()
 	{
+		$wincmd_ini	= %Commander_Path%\wincmd.ini		
+		this._wincmd_ini	:= $wincmd_ini
+		
 		this._setProcessName()
 		this._setHwnd()
 	}
@@ -69,7 +73,14 @@ Class TotalCommander
 		WinGet, ExStyle, ExStyle, A
 		return (ExStyle & 0x8) == 8 ? true : false
 	} 
-
+	/**
+	 */
+	saveConfig()
+	{
+		SendMessage  1075, 580, 0, , % "ahk_id " this._hwnd
+		
+		return this
+	} 
 
 
 }
