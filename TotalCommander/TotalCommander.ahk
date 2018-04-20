@@ -35,6 +35,17 @@ Class TotalCommander
 	{
 		return % this._process_name
 	}
+	/** Get\Set title to window
+	 */
+	title( $title:="" )
+	{
+		if( $title )
+			WinSetTitle, % "ahk_id " this._hwnd,,%$title%
+		else 
+			WinGetTitle, $title_current, % "ahk_id " this._hwnd 
+			
+		return % $title ? this : $title_current
+	} 
 	/**
 	 */
 	_setProcessName()

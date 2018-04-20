@@ -4,17 +4,23 @@
 
 $TcPane := new TcPane()
 
-;Dump($TcPane.getSourcePaneClass(), "getSourcePaneClass()", 1)
-;Dump($TcPane.getTargetPaneClass(), "getTargetPaneClass()", 1)
-;
-;
-;Dump($TcPane.getSourcePath(), "getSourcePane()", 1)
+;Dump($TcPane.getSourcePaneClass(), "_getSourcePaneClass()", 1)
+;Dump($TcPane._getTargetPaneClass(), "_getTargetPaneClass()", 1)
 
-Dump($TcPane.getPath(), "getPath('left')", 1)
-Dump($TcPane.getPath("right"),	"getPath('right')", 1)
+
+;Dump($TcPane.getSourcePath(), "getSourcePath()", 1)
+;Dump($TcPane.getTargetPath(), "getTargetPane()", 1)
+
+;Dump($TcPane.getPath(), "getPath('left')", 1)
+;Dump($TcPane.getPath("right"),	"getPath('right')", 1)
 ;
 ;Dump($TcPane.getPanedHwnd(),	"getPanedHwnd('source')", 1)
 ;Dump($TcPane.getPanedHwnd("target"),	"getPanedHwnd('target')", 1)
 ;
-;Dump($TcPane.getPaneSide(),	"getPaneSide('source')", 1)
-;Dump($TcPane.getPaneSide("target"),	"getPaneSide('target')", 1)
+;Dump($TcPane.getPane(),	"getPane('source')", 1)
+;Dump($TcPane.getPane("target"),	"getPane('target')", 1)
+
+Dump($TcPane.activePane() , "activePane", 1)
+
+;$TcPane.activePane("left") 
+;$TcPane.activePane("right")

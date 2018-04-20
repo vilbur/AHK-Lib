@@ -36,70 +36,35 @@ Class TcPane extends TotalCommander
 		this._setpathClasses()
 		this._setListBoxAndPathToPair()
 	}
-	/**
+	/** Set\Get active pane
+	  *
+	  * @param	string	$side "left|right" pane
 	 */
-	setActivePane()
+	activePane($side:="")
 	{
-		this._active_pane := this.getPaneSide()
+		$active_pane_side := this.getPane()
+		
+		if( ! $side )
+		return $active_pane_side
+
+		if( $side!=$active_pane_side )
+			ControlFocus, % this._getTargetPaneClass(), % this.hwnd()
+		
 		return this
 	}
-	/**
-	 */
-	getActivePane()
-	{
-		return % this._active_pane
-	}
-	/** @return string ClassNN of active pane
-	 */
-	getSourcePaneClass()
-	{
-		this._saveActiveWindow()
 
-		WinSet, AlwaysOnTop, On, A
-		
-		WinActivate, % this.hwnd()
-
-		ControlGetFocus, $source_pane, % this.hwnd()
-		
-		this._restorePreviousWindow()
-		
-		return %$source_pane%
-	}
-	/** @return string ClassNN of active pane
-	 */
-	getTargetPaneClass()
-	{
-		$source_pane	:= this.getSourcePaneClass()
-
-		For $pane_nn, $path_nn in this._class_nn
-			if( $pane_nn != $source_pane )
-				$target_pane := $pane_nn
-		
-		return $target_pane
-	}
-	/**
-	  * @param string pane 'source|target'
-	 */
-	getPanedHwnd( $pane:="source" )
-	{
-		$class_nn := this.getSourcePaneClass( $pane )
-
-		ControlGet, $hwnd, Hwnd  ,, %$class_nn%, % this.hwnd()
-
-		return $hwnd
-	}
 	/** @return string path of active pane
 	 */
 	getPath($side:="left")
 	{
-		return % $side == this.getPaneSide("source") ? this.getSourcePath() : this.getTargetPath()
+		return % $side == this.getPane("source") ? this.getSourcePath() : this.getTargetPath()
 	}
 	
 	/** @return string path of active pane
 	 */
 	getSourcePath()
 	{
-		$class_nn := this._class_nn[this.getSourcePaneClass()]
+		$class_nn := this._class_nn[this._getSourcePaneClass()]
 
 		return % this._getPathFromControl($class_nn)
 	}
@@ -107,14 +72,15 @@ Class TcPane extends TotalCommander
 	 */
 	getTargetPath()
 	{
-		$class_nn := this._class_nn[this.getTargetPaneClass()]
+		$class_nn := this._class_nn[this._getTargetPaneClass()]
 
 		return % this._getPathFromControl($class_nn)
 	}
-	/** get side of pane
+	/** Get side of pane
+	  *
 	  * @return string "left|right"
 	 */
-	getPaneSide($pane:="source")
+	getPane($pane:="source")
 	{
 		;Dump(this._class_nn, "this._class_nn", 1)
 		$class_nn := this._getPaneClass( $pane )
@@ -137,7 +103,6 @@ Class TcPane extends TotalCommander
 	 */
 	_getPathFromControl($class_nn)
 	{
-		;Dump($cqlass_nn, "class_nn", 1)
 		ControlGetText, $path , %$class_nn%, % this.hwnd()
 		;Dump($path, "path", 1)
 		;if( ! $path )
@@ -152,6 +117,82 @@ Class TcPane extends TotalCommander
 	}
 	/*---------------------------------------
 		GET CLASS NAMES
+	-----------------------------------------
+	*/
+	/** @return string ClassNN of active pane
+	  *
+	  * NOTE: IT SEEM THAT ControlGetFocus WORKS WITHOUT WinActivate
+	  *
+	 */
+	_getSourcePaneClass()
+	{
+		this._saveActiveWindow()
+		
+		WinSet, AlwaysOnTop, On, A
+		
+		WinActivate, % this.hwnd()
+
+		ControlGetFocus, $source_pane, % this.hwnd()
+		
+		this._restorePreviousWindow()
+		
+		return %$source_pane%
+	}
+	/** @return string ClassNN of active pane
+	 */
+	_getTargetPaneClass()
+	{
+		$source_pane	:= this._getSourcePaneClass()
+
+		For $pane_nn, $path_nn in this._class_nn
+			if( $pane_nn != $source_pane )
+				$target_pane := $pane_nn
+		
+		return $target_pane
+	}
+	/**
+	  * @param string pane 'source|target'
+	 */
+	_getPanedHwnd( $pane:="source" )
+	{
+		$class_nn := this._getSourcePaneClass( $pane )
+
+		ControlGet, $hwnd, Hwnd  ,, %$class_nn%, % this.hwnd()
+
+		return $hwnd
+	}
+	/*---------------------------------------
+		FALLBACKS FOR OBSOLETE METHODS
+	-----------------------------------------
+	*/
+	getSourcePaneClass(){
+		MsgBox,262144,, % "OBSOLETE METHOD:`n	TcPane.getSourcePaneClass()`n`nCHANGE IT TO:`n	TcPane._getSourcePaneClass()"
+	}
+	/** @return string ClassNN of active pane
+	 */
+	getTargetPaneClass(){
+		MsgBox,262144,, % "OBSOLETE METHOD:`n	TcPane.getTargetPaneClass()`n`nCHANGE IT TO:`n	TcPane._getTargetPaneClass()"
+	}
+	/**
+	  * @param string pane 'source|target'
+	 */
+	getPanedHwnd( $pane:="source" ){
+		MsgBox,262144,, % "OBSOLETE METHOD:`n	TcPane.getPanedHwnd()`n`nCHANGE IT TO:`n	TcPane._getPanedHwnd()"
+	}
+	/**
+	 */
+	setActivePane(){
+		MsgBox,262144,, % "OBSOLETE METHOD:`n	TcPane.setActivePane()`n`nCHANGE IT TO:`n	TcPane.activePane('left|right')"
+	}
+	/**
+	 */
+	getActivePane(){
+		MsgBox,262144,, % "OBSOLETE METHOD:`n	TcPane.getActivePane()`n`nCHANGE IT TO:`n	TcPane.activePane()"
+	}
+	
+	
+	/*---------------------------------------
+		GET CLASS NAMES ON INIT
 	-----------------------------------------
 	*/
 	/** search for existing classes for file listbox
@@ -267,9 +308,12 @@ Class TcPane extends TotalCommander
 	  */
 	_getPaneClass( $pane )
 	{
-		return % $pane == "source" ? this.getSourcePaneClass() : this.getTargetPaneClass()
+		return % $pane == "source" ? this._getSourcePaneClass() : this._getTargetPaneClass()
 	} 
-
+	/*---------------------------------------
+		ACCESSORS
+	-----------------------------------------
+	*/
 	/** get TcTabs
 	 */
 	TcTabs()

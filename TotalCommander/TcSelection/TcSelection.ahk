@@ -1,7 +1,7 @@
 ﻿#Include %A_LineFile%\..\..\TotalCommander.ahk
 #Include %A_LineFile%\..\..\TcPane\TcPane.ahk
-/*	Selection
-	To get selection call this script in Total commander with parameter %S
+
+/*	Total commander Selection
 */
 Class TcSelection extends TotalCommander
 {
@@ -11,78 +11,78 @@ Class TcSelection extends TotalCommander
 	{
 		this._init()
 	}
-	/** get
+	/** Get selection
 	*/
 	get($mask:="")
 	{
-		;MsgBox,262144,, get,2
 		return % this._getSelection($mask)
 	}
-	/** getFolders
-	*/
-	getFolders($mask:="")
-	{
-		return % this._getSelection($mask, "folders")
-	}
-	/** getFiles
+	/** Get selected files
 	*/
 	getFiles($mask:="")
 	{
-		return % this._getSelection($mask, "files")
+		return % this._getSelection("file", $mask)
+	}
+	/** Get selected folders
+	*/
+	getFolders($mask:="")
+	{
+		return % this._getSelection("folder", $mask)
 	}
 	/**
 	 */
-	getFocused()
+	getFocused($file_or_folder:="")
 	{
 		$active_listbox	:= this._Pane.getPanedHwnd()
 		$active_path	:= this._Pane.getSourcePath() ; active path does not exist if selection is in result of search E.G.: https://www.google.cz/imgres?imgurl=https%3A%2F%2Fi.ytimg.com%2Fvi%2FFvAipvYcAm0%2Fmaxresdefault.jpg&imgrefurl=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DFvAipvYcAm0&docid=-zHAQyYsPkUiGM&tbnid=PrwztdfNRjSd8M%3A&vet=10ahUKEwj40IjCj4zaAhWFF5oKHa90AEsQMwhEKAUwBQ..i&w=1280&h=720&bih=872&biw=1745&q=total%20commander%20search%20result%20feed&ved=0ahUKEwj40IjCj4zaAhWFF5oKHa90AEsQMwhEKAUwBQ&iact=mrc&uact=8
 		$index	:= this._GetFocus($active_listbox)
+		$item 	:= this._getPathOnIndex($active_listbox, $index)
 
-		$item := this._getPathOnIndex($active_listbox, $index)
-
-		;MsgBox,262144,active_path, %$active_path%,3 
 		if( $item )
 			$path =  %$active_path%\%$item%
-
-		return $path ? [$path] : false
+			
+		if( ! this._fileOrFolderTest($file_or_folder, $path) )
+			return 
+		
+		return $path ? $path : false
 	}
-
 	/**
 	 */
-	getSelectionOrFocused($mask:="")
+	getSelectionOrFocused($file_or_folder:="", $mask:="")
 	{
-		$focused	:= this.getFocused()
-		$selection	:= this.get($mask)
+		$selection	:= this._getSelection($mask, $file_or_folder)
 
-		return % $selection.length() > 0 ? $selection : $focused
-
+		return % $selection.length() > 0 ? $selection : [this.getFocused($file_or_folder)]
 	}
 
 	/** _getSelection
+	  *
+	  * @param	string	$mask	selection mask
+	  * @param	string	$file_or_folder	"file|folder" get files or folders, get both if empty
+	  *
 	*/
-	_getSelection($mask:="", $file_or_folder:="")
+	_getSelection( $file_or_folder:="", $mask:="" )
 	{
 		$selection	:= []
 		$indexes	:= [] ; indexes of selected items
-		$folder_test	:= $file_or_folder=="folders"
-
+		$folder_test	:= $file_or_folder=="folder"
 		$active_listbox	:= this._Pane.getPanedHwnd()
-		;Dump($active_listbox, "active_listbox", 1)
 		$active_path	:= this._Pane.getSourcePath() ; active path does not exist if selection is in result of search E.G.: https://www.google.cz/imgres?imgurl=https%3A%2F%2Fi.ytimg.com%2Fvi%2FFvAipvYcAm0%2Fmaxresdefault.jpg&imgrefurl=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DFvAipvYcAm0&docid=-zHAQyYsPkUiGM&tbnid=PrwztdfNRjSd8M%3A&vet=10ahUKEwj40IjCj4zaAhWFF5oKHa90AEsQMwhEKAUwBQ..i&w=1280&h=720&bih=872&biw=1745&q=total%20commander%20search%20result%20feed&ved=0ahUKEwj40IjCj4zaAhWFF5oKHa90AEsQMwhEKAUwBQ&iact=mrc&uact=8
-		;Dump($active_path, "active_path", 1)
-		;sleep, 3000
+
 		$count_of_items	:= this._GetSelItems($active_listbox, $indexes )
 		
-		if( $active_path ) ; add slash if path exists
+		if( RegExMatch($active_path, "i)^[A-Z]:" ) ) ; add slash if path exists
 			$active_path = %$active_path%\
-		
+		else
+			$active_path := ""			  
+			
 		For $i, $index in $indexes
 		{
 			$item := this._getPathOnIndex($active_listbox, $index)
 			$path =  %$active_path%%$item%
-			;Dump($item, "item", 1)
+
 			if( $item && ( $mask=="" || RegExMatch($path, "i)" $mask ) )  )
-				if($file_or_folder == "" || InStr(FileExist($path), "D") == $folder_test)
+				if( this._fileOrFolderTest($file_or_folder, $path) )
 					$selection.push( $path )
 		}
 		
@@ -98,15 +98,25 @@ Class TcSelection extends TotalCommander
 
 		return % $path_match!=".." ? $path_match : ""
 	}
-
-
-
+	/** Is path file or folder 
+	 */
+	_fileOrFolderTest( $file_or_folder, $path )
+	{
+		if( ! $path )
+			return false
+		
+		if( ! $file_or_folder )
+			return true
+		
+		$folder_test := $file_or_folder=="folder"
+		
+		return % InStr(FileExist($path), "D") == $folder_test
+	} 
 
 	/*
-	-----------------------------------------------
-	LISTBOX METHODS
-	-----------------------------------------------
-
+		-----------------------------------------------
+				LISTBOX METHODS
+		-----------------------------------------------
 	*/
 	_GetSelItems(HLB, ByRef ItemArray, MaxItems := 0) {
 		Static LB_GETSELITEMS := 0x0191
