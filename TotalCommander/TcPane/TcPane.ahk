@@ -27,7 +27,6 @@ Class TcPane extends TotalCommander
 			,"path":	"Window"}}	; 
 
 	_class_nn	:= {} ; found class names
-	_active_pane	:= ""
 
 	__New()
 	{
@@ -35,6 +34,8 @@ Class TcPane extends TotalCommander
 		this._setPaneClasses()
 		this._setpathClasses()
 		this._setListBoxAndPathToPair()
+		
+		;Dump(this._class_nn, "TcPane._class_nn", 1)
 	}
 	/** Set\Get active pane
 	  *
@@ -104,16 +105,12 @@ Class TcPane extends TotalCommander
 	_getPathFromControl($class_nn)
 	{
 		ControlGetText, $path , %$class_nn%, % this.hwnd()
-		;Dump($path, "path", 1)
-		;if( ! $path )
-		;{
-		;	RegExMatch( $class_nn, "i)([^\d]+)(\d+)", $class_nn_match )
-		;	return this._getPathFromControl( $class_nn_match1 ($class_nn_match2 + 1) )
-		;}
-
-		SplitPath, $path,, $path_dir ; remove mask liek "*.*" from end of path
-
-		return $path_dir
+		
+		/* remove mask like "*.*" from end of path
+		 */
+		$path := RegExReplace( $path, "[\\\/]\*\.\*", "" ) 
+		
+		return $path
 	}
 	/*---------------------------------------
 		GET CLASS NAMES
@@ -227,7 +224,10 @@ Class TcPane extends TotalCommander
 	} 
 	
 	/** search for existing classes for current path
-		TPathPanel(2-1) | Window(17-9)
+	 * TPathPanel(2-1) | Window(17-9)
+	 * 
+	 * if can found disk info control then path is -1
+	 * 
 	 */
 	_setpathClasses()
 	{
@@ -237,19 +237,23 @@ Class TcPane extends TotalCommander
 
 		$last_index := this._searchExistingControl( $class_name, $indexes[1] )		
 
-		if( this._isDiskSpaceControl( $class_name $last_index ) )
+		if( this._isDiskInfoControl( $class_name $last_index ) )
 			$last_index--
 		
 		this._class_nn[$panes_nn[1]] := $class_name $last_index
 		this._class_nn[$panes_nn[2]] := $class_name ($last_index - $indexes[2] )
 	}
-	/**
+	/** If control is next "Disk space info" OR "Ftp info"
+	  *
+	  *  Controls next to disk dropdown menu E.G.:
+	  *		1) 123 453 k of 987 654 k free
+	  *		2) ftp://foo.ftp.address 
 	 */
-	_isDiskSpaceControl( $class_name )
+	_isDiskInfoControl( $class_name )
 	{
 		ControlGetText, $text , %$class_name%, % this.hwnd()
 
-		return RegExMatch( $text, "i)free$" )
+		return RegExMatch( $text, "i)(^ftp|free$)" )
 	} 
 	/** serach for number of control
 		E.G.: LCLListBox1, LCLListBox2, LCLListBox3

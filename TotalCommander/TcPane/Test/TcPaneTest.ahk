@@ -9,7 +9,7 @@ $TcPane := new TcPane()
 
 
 ;Dump($TcPane.getSourcePath(), "getSourcePath()", 1)
-;Dump($TcPane.getTargetPath(), "getTargetPane()", 1)
+Dump($TcPane.getTargetPath(), "getTargetPath()", 1)
 
 ;Dump($TcPane.getPath(), "getPath('left')", 1)
 ;Dump($TcPane.getPath("right"),	"getPath('right')", 1)
@@ -20,7 +20,7 @@ $TcPane := new TcPane()
 ;Dump($TcPane.getPane(),	"getPane('source')", 1)
 ;Dump($TcPane.getPane("target"),	"getPane('target')", 1)
 
-Dump($TcPane.activePane() , "activePane", 1)
-
+;Dump($TcPane.activePane() , "activePane", 1)
+;
 ;$TcPane.activePane("left") 
 ;$TcPane.activePane("right")
