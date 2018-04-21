@@ -1,23 +1,29 @@
 #SingleInstance force
+#NoTrayIcon
 
 global $last_win
 global $TcPaneWatcher
 global $CLSID
 
-/** TcPaneWatcher
+/** Watch Total Commander
+ *	Set last used control when Total Commander lost focus
  *
+ * @param	{hwnd:control_class}	_focused_controls	store last used control class, key is hwnd of Total Commander (for use on multiple instances)
+ *
+ * @method	self	hwnd( integer $hwnd  )	
+ * @method	string	focusedControl( integer $hwnd )	get last focused control class 
+ *      
  */
 Class TcPaneWatcher
 {
-	
-	
 	_focused_controls := {}
 	
 	__New()
 	{
-		this.setOnWinMessage()
+		this._setOnWinMessage()
 	}
-	/**
+	/** Set hwnd for identification of Total Commander 
+	  * @param	integer	$hwnd	hwnd of Total Commander 
 	 */
 	hwnd( $hwnd )
 	{
@@ -26,10 +32,17 @@ Class TcPaneWatcher
 		$last_win := $hwnd
 		
 		return this
-	} 
-	/**
+	}
+	/** Get last focused control
+	  * @param	integer	$hwnd	hwnd of Total Commander 
 	 */
-	setOnWinMessage()
+	focusedControl( $hwnd_tc )
+	{
+		return % this._focused_control[$hwnd_tc]
+	}
+	/** Set callback on focus change
+	 */
+	_setOnWinMessage()
 	{
 		Gui +LastFound
 		$hwnd := WinExist()
@@ -37,50 +50,34 @@ Class TcPaneWatcher
 		DllCall( "RegisterShellHookWindow", UInt,$hwnd )
 		$MsgNum := DllCall( "RegisterWindowMessage", Str,"SHELLHOOK" )
 		OnMessage( $MsgNum, "onWindowChange" )
-
-		;$last_win := "TTOTAL_CMD"
 			
 		return this
 	}
-	/**
-	 */
-	focusedControl( $hwnd_tc )
-	{
-		;Dump(this, "this.", 1)
-		return % this._focused_control[$hwnd_tc]
-	}
-	/**
-	 */
-	onTcBlur( $hwnd_tc )
+	/** Set last used control on Total Commander lost focus
+	  * Called by onWindowChange()
+	  */
+	_onTotalCommanderLostFocus( $hwnd_tc )
 	{
 		$active_window := WinActive("A")
-		
-		;MsgBox,262144,hwnd_tc, %$hwnd_tc%,2
-		
-		;sleep, 1000		
+			
 		WinActivate, ahk_id %$hwnd_tc% 
 
-		;sleep, 1000
-		ControlGetFocus, $source_pane, ahk_id %$hwnd_tc%
-		;ControlGetFocus, $source_pane, ahk_class TTOTAL_CMD
+		this._setLastFocusedControl( $hwnd_tc )
 		
-		;MsgBox,262144,source_pane, %$source_pane%,3 
-		
-		;if( ! $TcPaneWatcherCom )
-		;	$TcPaneWatcherCom := ComObjActive($CLSID)
-
-		this._focused_control[$hwnd_tc] := $source_pane
-		
-		;Dump(this._focused_control, "this._focused_control", 1)
-
 		WinActivate, ahk_id %$active_window%
 	}
-	
+	/** Set last used control
+	 */
+	_setLastFocusedControl( $hwnd_tc )
+	{
+		ControlGetFocus, $source_pane, ahk_id %$hwnd_tc%
+
+		this._focused_control[$hwnd_tc] := $source_pane
+	} 
 	
 }
 
-
-/**
+/** On Total Commander Get\Lost focus
  */
 onWindowChange(wParam, lParam)
 {
@@ -92,7 +89,7 @@ onWindowChange(wParam, lParam)
 		
 	if( $last_class == "TTOTAL_CMD" )
 	{
-		$TcPaneWatcher.onTcBlur( $last_win )
+		$TcPaneWatcher._onTotalCommanderLostFocus( $last_win )
 		
 		$last_win := ""
 	}
@@ -149,7 +146,7 @@ registerTcPane(Object, CLSID, Flags:=0)
 }
 
 
-/**
+/** RUN WATCHER VIA FILE CALL
  */
 $hwnd	= %1%
 $CLSID	= %2%

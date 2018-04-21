@@ -7,15 +7,9 @@ global $CLSID
 $CLSID	:= "{6B39CAA1-A320-4CB0-8DB4-352AA81E460E}"
 
 
-/** Get focused pane when Total commander window lost focus
+/** Get focused control (file list) when Total commander window lost focus
   * 
-  * 2) log file log.txt On each un-focus of Total commander 
-  *
-  *      
  */  
-
-/**
- */
 runPaneWatcher()
 {
 	$hwnd := WinExist()
@@ -62,18 +56,20 @@ ShellMessage(wParam, lParam)
 	 */
 	if( $last_class == "TTOTAL_CMD" )
 	{
+		
 		if( ! $TcPaneWatcherCom )
 			$TcPaneWatcherCom := ComObjActive($CLSID)
 		
-		sleep, 500 ; WAIT THEN TcPaneWatcher set active pane
+		sleep, 500 ; WAIT THEN TcPaneWatcher se  t active pane
 		
 		/** LOG LAST CONTROL TO FILE 
 		 */
-		FileAppend, % "PANE-" $TcPaneWatcherCom.focusedControl($last_win) "`n", %A_LineFile%\..\log.txt
+		WinGetTitle, $win_title, ahk_id %$last_win%
+		FileAppend, % (InStr( $win_title, "x64" )?"64bit":"32bit") ": " $TcPaneWatcherCom.focusedControl($last_win) "`n", %A_LineFile%\..\log.txt
 		
 		/** MESsAGE LAST CONTROL TO FILE 
 		 */
-		;MsgBox,262144,, % "Active pane: " $TcPaneWatcherCom.focusedControl($last_win),1
+		MsgBox,262144,, % (InStr( $win_title, "x64" )?"64bit":"32bit") ": " $TcPaneWatcherCom.focusedControl($last_win),1
 	
 		$last_win := ""
 	}
