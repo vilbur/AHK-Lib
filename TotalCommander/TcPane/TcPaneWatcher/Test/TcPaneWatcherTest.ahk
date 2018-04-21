@@ -69,23 +69,22 @@ ShellMessage(wParam, lParam)
 		
 		/** LOG LAST CONTROL TO FILE 
 		 */
-		;FileAppend, % "PANE-" $TcPaneWatcherCom.focusedControl($last_win) "`n", %A_LineFile%\..\log.txt
+		FileAppend, % "PANE-" $TcPaneWatcherCom.focusedControl($last_win) "`n", %A_LineFile%\..\log.txt
 		
 		/** MESsAGE LAST CONTROL TO FILE 
 		 */
-		MsgBox,262144,, % "Active pane: " $TcPaneWatcherCom.focusedControl($last_win),1
+		;MsgBox,262144,, % "Active pane: " $TcPaneWatcherCom.focusedControl($last_win),1
 	
 		$last_win := ""
 	}
+	
+	WinGetClass, $active_class, ahk_id %lParam%
+
 	/** ON TOTAL COMMANDER BLUR
 	 */
-	else
-	{
-		WinGetClass, $active_class, ahk_id %lParam%
-		
-		if( $active_class=="TTOTAL_CMD" )
-			$last_win := lParam
-	}
+	if( $active_class=="TTOTAL_CMD" )
+		$last_win := lParam
+	
 }
 
 /** RUN TEST 

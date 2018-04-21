@@ -96,15 +96,13 @@ onWindowChange(wParam, lParam)
 		
 		$last_win := ""
 	}
-	else
-	{
-		WinGetClass, $win_class, ahk_id %lParam%
-
-		if( $win_class=="TTOTAL_CMD" ){
-			$last_win := lParam
-			;MsgBox,262144,, TC FOCUS,2 
-		}
-	}
+	
+	WinGetClass, $win_class, ahk_id %lParam%
+	
+	if( $win_class=="TTOTAL_CMD" )
+		$last_win := lParam
+		;MsgBox,262144,, TC FOCUS,2 
+	
 		
 }
 /*
