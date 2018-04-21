@@ -7,25 +7,37 @@ global $CLSID
 $CLSID	:= "{6B39CAA1-A320-4CB0-8DB4-352AA81E460E}"
 
 
-/** RUN TEST
-  *
-  *
+/** Get focused pane when Total commander window lost focus
+  * 
+  * 2) log file log.txt On each un-focus of Total commander 
   *
   *      
  */  
 
 /**
  */
+runPaneWatcher()
+{
+	$hwnd := WinExist()
+	
+	try
+	{
+		$TcPaneWatcherCom := ComObjActive($CLSID)
+	}	
+	
+	if( $TcPaneWatcherCom )
+		$TcPaneWatcherCom.hwnd($hwnd)
+	
+	else
+		Run, %A_LineFile%\..\..\TcPaneWatcher.ahk %$hwnd% %$CLSID%
+}
+/**  
+ */
 deleteLogFile()
 {
 	FileDelete, %A_LineFile%\..\log.tx
 }
-/**
- */
-runPaneWatcher()
-{
-	Run, %A_LineFile%\..\..\TcPaneWatcher.ahk %$CLSID%
-}
+
 /**
  */
 bindMessageOnWindowChange()
@@ -41,27 +53,38 @@ bindMessageOnWindowChange()
  */
 ShellMessage(wParam, lParam)
 {
-	if(  wParam!=32772 )
+	if( wParam!=32772 )
 		return
-		
-	if( $last_win == "TTOTAL_CMD" ){
-		
+	
+	WinGetClass, $last_class, ahk_id %$last_win%
+	
+	/** ON TOTAL COMMANDER GET FOCUS 
+	 */
+	if( $last_class == "TTOTAL_CMD" )
+	{
 		if( ! $TcPaneWatcherCom )
 			$TcPaneWatcherCom := ComObjActive($CLSID)
 		
-		sleep, 100 ; WAIT THEN TcPaneWatcher set active pane
+		sleep, 500 ; WAIT THEN TcPaneWatcher set active pane
 		
-		FileAppend, % "PANE-" $TcPaneWatcherCom.activePane() "`n", %A_LineFile%\..\log.txt 
-		;MsgBox,262144,, % "Active pane: " $TcPaneWatcherCom.activePane(),3 
+		/** LOG LAST CONTROL TO FILE 
+		 */
+		;FileAppend, % "PANE-" $TcPaneWatcherCom.focusedControl($last_win) "`n", %A_LineFile%\..\log.txt
+		
+		/** MESsAGE LAST CONTROL TO FILE 
+		 */
+		MsgBox,262144,, % "Active pane: " $TcPaneWatcherCom.focusedControl($last_win),1
 	
 		$last_win := ""
 	}
+	/** ON TOTAL COMMANDER BLUR
+	 */
 	else
 	{
-		WinGetClass, $win_class, ahk_id %lParam%
+		WinGetClass, $active_class, ahk_id %lParam%
 		
-		if( $win_class=="TTOTAL_CMD" )
-			$last_win := "TTOTAL_CMD"
+		if( $active_class=="TTOTAL_CMD" )
+			$last_win := lParam
 	}
 }
 

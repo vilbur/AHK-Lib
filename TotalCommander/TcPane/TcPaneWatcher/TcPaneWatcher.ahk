@@ -1,7 +1,7 @@
 #SingleInstance force
 
 global $last_win
-global $TcPaneWatcherCom
+global $TcPaneWatcher
 global $CLSID
 
 /** TcPaneWatcher
@@ -9,12 +9,24 @@ global $CLSID
  */
 Class TcPaneWatcher
 {
-	_active_pane := ""
+	
+	
+	_focused_controls := {}
 	
 	__New()
 	{
 		this.setOnWinMessage()
 	}
+	/**
+	 */
+	hwnd( $hwnd )
+	{
+		this._focused_controls[$hwnd]	:= ""
+		
+		$last_win := $hwnd
+		
+		return this
+	} 
 	/**
 	 */
 	setOnWinMessage()
@@ -26,16 +38,44 @@ Class TcPaneWatcher
 		$MsgNum := DllCall( "RegisterWindowMessage", Str,"SHELLHOOK" )
 		OnMessage( $MsgNum, "onWindowChange" )
 
-		$last_win := "TTOTAL_CMD"
+		;$last_win := "TTOTAL_CMD"
 			
 		return this
 	}
 	/**
 	 */
-	activePane()
+	focusedControl( $hwnd_tc )
 	{
-		return % this._active_pane
+		;Dump(this, "this.", 1)
+		return % this._focused_control[$hwnd_tc]
 	}
+	/**
+	 */
+	onTcBlur( $hwnd_tc )
+	{
+		$active_window := WinActive("A")
+		
+		;MsgBox,262144,hwnd_tc, %$hwnd_tc%,2
+		
+		;sleep, 1000		
+		WinActivate, ahk_id %$hwnd_tc% 
+
+		;sleep, 1000
+		ControlGetFocus, $source_pane, ahk_id %$hwnd_tc%
+		;ControlGetFocus, $source_pane, ahk_class TTOTAL_CMD
+		
+		;MsgBox,262144,source_pane, %$source_pane%,3 
+		
+		;if( ! $TcPaneWatcherCom )
+		;	$TcPaneWatcherCom := ComObjActive($CLSID)
+
+		this._focused_control[$hwnd_tc] := $source_pane
+		
+		;Dump(this._focused_control, "this._focused_control", 1)
+
+		WinActivate, ahk_id %$active_window%
+	}
+	
 	
 }
 
@@ -44,31 +84,26 @@ Class TcPaneWatcher
  */
 onWindowChange(wParam, lParam)
 {
+
 	if(  wParam!=32772 )
 		return
-	if( $last_win == "TTOTAL_CMD" )
-	{
-		$active_window := WinActive("A")
 		
-		WinActivate, ahk_class TTOTAL_CMD 
-
-		ControlGetFocus, $source_pane, ahk_class TTOTAL_CMD
-
-		if( ! $TcPaneWatcherCom )
-			$TcPaneWatcherCom := ComObjActive($CLSID)
-
-		$TcPaneWatcherCom._active_pane := $source_pane
-
-		WinActivate, ahk_id %$active_window% 
-
+	WinGetClass, $last_class, ahk_id %$last_win%
+		
+	if( $last_class == "TTOTAL_CMD" )
+	{
+		$TcPaneWatcher.onTcBlur( $last_win )
+		
 		$last_win := ""
 	}
 	else
 	{
 		WinGetClass, $win_class, ahk_id %lParam%
 
-		if( $win_class=="TTOTAL_CMD" )
-			$last_win := "TTOTAL_CMD"
+		if( $win_class=="TTOTAL_CMD" ){
+			$last_win := lParam
+			;MsgBox,262144,, TC FOCUS,2 
+		}
 	}
 		
 }
@@ -115,10 +150,12 @@ registerTcPane(Object, CLSID, Flags:=0)
     cookieJar[Object] := cookie
 }
 
+
 /**
  */
-$CLSID	= %1%
+$hwnd	= %1%
+$CLSID	= %2%
 
-$TcPaneWatcher 	:= new TcPaneWatcher()
+$TcPaneWatcher := new TcPaneWatcher().hwnd($hwnd)
 
 registerTcPane($TcPaneWatcher, $CLSID)
