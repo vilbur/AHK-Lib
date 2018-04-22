@@ -109,7 +109,7 @@ Class TcPane extends TcControlClasses
 	updateActivePane(  )
 	{
 		sleep, 200
-		MsgBox,262144,, % this._TcPaneWatcher.focusedControl(this._hwnd),1
+		MsgBox,262144,, % this._TcPaneWatcher.lastPane(this._hwnd),1
 	}
 
 	/** Set\Get active pane
@@ -190,7 +190,7 @@ Class TcPane extends TcControlClasses
 	 */
 	_getSourcePaneClass()
 	{
-		return % this._TcPaneWatcher.focusedControl(this._hwnd)
+		return % this._TcPaneWatcher.lastPane(this._hwnd)
 	}
 	/** @return string ClassNN of active pane
 	 */

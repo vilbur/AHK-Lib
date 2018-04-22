@@ -1,8 +1,8 @@
 #SingleInstance force
 ;#NoTrayIcon
 
-global $last_win
 global $TcPaneWatcher
+global $last_win
 global $CLSID
 
 /** Watch Total Commander & Set last used control when Total Commander lost focus
@@ -10,22 +10,16 @@ global $CLSID
  *	Script has own file because of it use OnMessage(), in this way OnMessage does not collide with others OnMessages
  *	TcPaneWatcher is accesable via ComObject
  * 
- * @param	{hwnd:control_class}	_focused_controls	store last used control class, key is hwnd of Total Commander (for use on multiple instances)
+ * @param	{hwnd:control_class}	_last_panes	store last used control class, key is hwnd of Total Commander (for use on multiple instances)
  *
  * @method	self	hwnd( integer $hwnd  )	
- * @method	string	focusedControl( integer $hwnd )	get last focused control class 
+ * @method	string	lastPane( integer $hwnd )	get last focused control class 
  *      
  */
 Class TcPaneWatcher
 {
-	_focused_controls := {}
+	_last_panes := {}
 	
-	/**
-	 */
-	test()
-	{
-		MsgBox,262144,, TcPaneWatcher,2 
-	}
 	__New()
 	{
 		this._setOnWinMessage()
@@ -35,28 +29,28 @@ Class TcPaneWatcher
 	 */
 	hwnd( $hwnd_tc )
 	{
-		this._focused_controls[$hwnd_tc]	:= ""
+		this._last_panes[$hwnd_tc]	:= ""
 		
-		this._initFocusedControl( $hwnd_tc )
+		this._initLastPane( $hwnd_tc )
 		
 		return this
 	}
 	
-	/** Get last focused control
+	/** Get last focused pane
 	  * @param	integer	$hwnd	hwnd of Total Commander 
 	 */
-	focusedControl( $hwnd_tc )
+	lastPane( $hwnd_tc )
 	{
-		return % this._focused_control[$hwnd_tc]
+		return % this._last_panes[$hwnd_tc]
 	}
 	/**
 	 */
-	_initFocusedControl( $hwnd_tc )
+	_initLastPane( $hwnd_tc )
 	{
 		$last_win := $hwnd_tc
 		
 		if( WinActive("ahk_id " $hwnd_tc) )
-			this._setLastFocusedControl( $hwnd_tc )
+			this._setLastPane( $hwnd_tc )
 	} 
 	/** Set callback on focus change
 	 */
@@ -80,17 +74,24 @@ Class TcPaneWatcher
 			
 		WinActivate, ahk_id %$hwnd_tc% 
 
-		this._setLastFocusedControl( $hwnd_tc )
+		this._setLastPane( $hwnd_tc )
 		
 		WinActivate, ahk_id %$active_window%
 	}
 	/** Set last used control
 	 */
-	_setLastFocusedControl( $hwnd_tc )
+	_setLastPane( $hwnd_tc )
 	{
 		ControlGetFocus, $source_pane, ahk_id %$hwnd_tc%
 
-		this._focused_control[$hwnd_tc] := $source_pane
+		if( this._isFileListControl( $source_pane ) )
+			this._last_panes[$hwnd_tc] := $source_pane
+	}
+	/** Make sure that last control was list box
+	 */
+	_isFileListControl( $control_class )
+	{
+		return % RegExMatch( $control_class, "i)LCLListBox|TMyListBox" ) 
 	} 
 	
 }
@@ -99,7 +100,6 @@ Class TcPaneWatcher
  */
 onWindowChange(wParam, lParam)
 {
-
 	if(  wParam!=32772 )
 		return
 		
@@ -115,10 +115,7 @@ onWindowChange(wParam, lParam)
 	WinGetClass, $win_class, ahk_id %lParam%
 	
 	if( $win_class=="TTOTAL_CMD" )
-		$last_win := lParam
-		;MsgBox,262144,, TC FOCUS,2 
-	
-		
+		$last_win := lParam		
 }
 /*
     ObjRegisterActive(Object, CLSID, Flags:=0)
