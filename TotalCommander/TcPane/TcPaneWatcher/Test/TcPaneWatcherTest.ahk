@@ -10,26 +10,39 @@ $CLSID	:= "{6B39CAA1-A320-4CB0-8DB4-352AA81E460E}"
 /** Get focused control (file list) when Total commander window lost focus
   * 
  */  
-runPaneWatcher()
+setPaneWatcher()
 {
-	$hwnd := WinExist()
+	$hwnd := WinExist("A")
 	
+	$last_win 	:= $hwnd
+
 	try
 	{
 		$TcPaneWatcherCom := ComObjActive($CLSID)
-	}	
+		
+		if( $TcPaneWatcherCom )
+			$TcPaneWatcherCom.hwnd($hwnd)
+	}
 	
-	if( $TcPaneWatcherCom )
-		$TcPaneWatcherCom.hwnd($hwnd)
+	if( ! $TcPaneWatcherCom )
+		runPaneWatcher($hwnd)
 	
-	else
-		Run, %A_LineFile%\..\..\TcPaneWatcher.ahk %$hwnd% %$CLSID%
+	
+}
+/** Get focused control (file list) when Total commander window lost focus
+  * 
+ */  
+runPaneWatcher($hwnd)
+{	
+	Run, %A_LineFile%\..\..\TcPaneWatcher.ahk %$hwnd% %$CLSID%
+	
+	;setPaneWatcher()
 }
 /**  
  */
 deleteLogFile()
 {
-	FileDelete, %A_LineFile%\..\log.tx
+	FileDelete, %A_LineFile%\..\log.txt
 }
 
 /**
@@ -49,7 +62,7 @@ ShellMessage(wParam, lParam)
 {
 	if( wParam!=32772 )
 		return
-	
+	;MsgBox,262144,last_win, %$last_win%,3 
 	WinGetClass, $last_class, ahk_id %$last_win%
 	
 	/** ON TOTAL COMMANDER GET FOCUS 
@@ -60,12 +73,12 @@ ShellMessage(wParam, lParam)
 		if( ! $TcPaneWatcherCom )
 			$TcPaneWatcherCom := ComObjActive($CLSID)
 		
-		sleep, 500 ; WAIT THEN TcPaneWatcher se  t active pane
+		sleep, 500 ; WAIT THEN TcPaneWatcher set active pane
 		
 		/** LOG LAST CONTROL TO FILE 
 		 */
 		WinGetTitle, $win_title, ahk_id %$last_win%
-		FileAppend, % (InStr( $win_title, "x64" )?"64bit":"32bit") ": " $TcPaneWatcherCom.focusedControl($last_win) "`n", %A_LineFile%\..\log.txt
+		;FileAppend, % (InStr( $win_title, "x64" )?"64bit":"32bit") ": " $TcPaneWatcherCom.focusedControl($last_win) "`n", %A_LineFile%\..\log.txt
 		
 		/** MESsAGE LAST CONTROL TO FILE 
 		 */
@@ -86,5 +99,5 @@ ShellMessage(wParam, lParam)
 /** RUN TEST 
  */  
 deleteLogFile()
-runPaneWatcher()
+setPaneWatcher()
 bindMessageOnWindowChange()

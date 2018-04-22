@@ -1,42 +1,117 @@
 ﻿#Include %A_LineFile%\..\includes.ahk
+
+global $CLSID
+
+$CLSID	:= "{6B39CAA1-A320-4CB0-8DB4-352AA81E460E}"
+
 /*	Pane
 	To get selection call this script in Total commander with parameter %S
 */
-Class TcPane extends TotalCommander
+Class TcPane extends TcControlClasses
 {
 	_TcTabs 	:= new TcTabs().Parent(this)
-	
-	/* Getting of controls class is tricky, because Total commander is changing then dynamically
-	   
-	   "file listbox" & "path" has different classes for 32-bit & 64-bit version.
-			They are changing if:
-				"Separate tree"	is visible
-				"FTP connection"	is visible				
-	   	  
-			TC version	  File tree	  Path
-			--------------	---------------	----------------
-			TOTALCMD64.EXE	LCLListBox(5-1)	Window(17-9)
-			TOTALCMD.EXE	TMyListBox(2-1)	TPathPanel(2-1)
-			
-  */
-	_class_names :=	{"TOTALCMD.EXE":	{"listbox":	"TMyListBox"	;
-			,"index":	[2, 1]	; [index of first control, value to remove for next control]
-			,"path":	"TPathPanel"}	; 
-		,"TOTALCMD64.EXE":	{"listbox":	"LCLListBox"	;
-			,"index":	[17, 5]	; [index of first control, value to remove for next control]
-			,"path":	"Window"}}	; 
-
-	_class_nn	:= {} ; found class names
+	_TcPaneWatcher	:= ""
+	_panes := {}	
 
 	__New()
 	{
+		;$g_TcPane := this
 		this._init()
 		this._setPaneClasses()
-		this._setpathClasses()
+		this._setPathClasses()
 		this._setListBoxAndPathToPair()
+		
+		;$class_nn := new TcControlClasses(this._hwnd)
+		;Dump(this._class_nn, "this._class_nn", 1)
+		this._setPanes()
+		
+		this._runTcPaneWatcher()
+		this._setTcPaneWatcher()		
+				
+		;sleep, 1000
+		;Dump(this._TcPaneWatcher, "this._TcPaneWatcher", 1)
+		;Dump(this, "this.", 1)
+		;Dump(this._panes, "this._panes", 1)
+		;this._setPanes()		
+		;this._setPaneClasses()
+		;this._setpathClasses()
+		;this._setListBoxAndPathToPair()
 		
 		;Dump(this._class_nn, "TcPane._class_nn", 1)
 	}
+
+	/**
+	 */
+	_setPanes()
+	{
+		For $pane_class, $path_class in this._class_nn
+			this._panes[$pane_class] := this._getPaneObject($pane_class, $path_class, A_Index)
+	}
+	/**
+	 */
+	_getPaneObject($pane_class, $path_class, $index)
+	{
+		return %	{"side":	$index == 1 ? "right" : "left"
+			,"hwnd":	this._getControlHwnd($pane_class)
+			,"path":	{"class":	$path_class
+				,"hwnd":	this._getControlHwnd($path_class)}}
+	}
+	/**
+	 */
+	_getControlHwnd( $class_nn )
+	{
+		ControlGet, $hwnd, Hwnd,, %$class_nn%,  % this.hwnd()
+
+		return $hwnd 
+	}
+	/** Get focused control (file list) when Total commander window lost focus
+	  * 
+	 */  
+	_setTcPaneWatcher()
+	{
+
+		if( ! this._TcPaneWatcher )
+			try
+			{
+				this._TcPaneWatcher := ComObjActive($CLSID).hwnd(this._hwnd)
+			}
+			
+		if( ! this._TcPaneWatcher )
+			this._runTcPaneWatcher()
+	}
+
+	/** Get focused control (file list) when Total commander window lost focus
+	  * 
+	 */  
+	_runTcPaneWatcher()
+	{
+		$hwnd := this._hwnd
+		
+		Run, %A_LineFile%\..\TcPaneWatcher\TcPaneWatcher.ahk %$hwnd% %$CLSID%
+		
+		this._setTcPaneWatcher()
+	}
+
+	/** Get side of pane
+	  *
+	  * @return string "left|right"
+	 */
+	getPane($pane:="source")
+	{
+		$class_nn := this._getPaneClass( $pane )
+
+		For $pane_class, $path_class in this._class_nn
+			if( $pane_class==$class_nn )
+				return A_Index == 1 ? "right" : "left"
+	}
+	/**
+	 */
+	updateActivePane(  )
+	{
+		sleep, 200
+		MsgBox,262144,, % this._TcPaneWatcher.focusedControl(this._hwnd),1
+	}
+
 	/** Set\Get active pane
 	  *
 	  * @param	string	$side "left|right" pane
@@ -46,10 +121,14 @@ Class TcPane extends TotalCommander
 		$active_pane_side := this.getPane()
 		
 		if( ! $side )
-		return $active_pane_side
+			return $active_pane_side
 
-		if( $side!=$active_pane_side )
+		if( $side!=$active_pane_side ){
+			;MsgBox,262144,, % "ACTIVETE " $side,2
+			WinActivate,  % this.hwnd()
+			sleep, 500
 			ControlFocus, % this._getTargetPaneClass(), % this.hwnd()
+		}
 		
 		return this
 	}
@@ -77,19 +156,7 @@ Class TcPane extends TotalCommander
 
 		return % this._getPathFromControl($class_nn)
 	}
-	/** Get side of pane
-	  *
-	  * @return string "left|right"
-	 */
-	getPane($pane:="source")
-	{
-		;Dump(this._class_nn, "this._class_nn", 1)
-		$class_nn := this._getPaneClass( $pane )
 
-		For $pane_class, $path_class in this._class_nn
-			if( $pane_class==$class_nn )
-				return A_Index == 1 ? "right" : "left"
-	}
 	/** refresh pane
 	*/
 	refresh($pane:="source")
@@ -123,17 +190,7 @@ Class TcPane extends TotalCommander
 	 */
 	_getSourcePaneClass()
 	{
-		this._saveActiveWindow()
-		
-		WinSet, AlwaysOnTop, On, A
-		
-		WinActivate, % this.hwnd()
-
-		ControlGetFocus, $source_pane, % this.hwnd()
-		
-		this._restorePreviousWindow()
-		
-		return %$source_pane%
+		return % this._TcPaneWatcher.focusedControl(this._hwnd)
 	}
 	/** @return string ClassNN of active pane
 	 */
@@ -192,6 +249,50 @@ Class TcPane extends TotalCommander
 		GET CLASS NAMES ON INIT
 	-----------------------------------------
 	*/
+
+	/*---------------------------------------
+		ACCESSORS
+	-----------------------------------------
+	*/
+	/** get TcTabs
+	 */
+	TcTabs()
+	{
+		return % this._TcTabs
+	} 
+
+}
+
+
+
+/*  
+*/
+Class TcControlClasses extends TotalCommander
+{
+	_process_name	:= ""
+
+	/* Getting of controls class is tricky, because Total commander is changing then dynamically
+	   
+	   "file listbox" & "path" has different classes for 32-bit & 64-bit version.
+			They are changing if:
+				"Separate tree"	is visible
+				"FTP connection"	is visible				
+	   	  
+			TC version	  File tree	  Path
+			--------------	---------------	----------------
+			TOTALCMD64.EXE	LCLListBox(5-1)	Window(17-9)
+			TOTALCMD.EXE	TMyListBox(2-1)	TPathPanel(2-1)
+			
+  */
+	static _class_names :=	{"TOTALCMD.EXE":	{"listbox":	"TMyListBox"	;
+			,"index":	[2, 1]	; [index of first control, value to remove for next control]
+			,"path":	"TPathPanel"}	; 
+		,"TOTALCMD64.EXE":	{"listbox":	"LCLListBox"	;
+			,"index":	[17, 5]	; [index of first control, value to remove for next control]
+			,"path":	"Window"}}	; 
+
+	_class_nn	:= {} ; found class names
+	
 	/** search for existing classes for file listbox
 		TMyListBox(2-1) | LCLListBox(5-1)
 	 */
@@ -229,7 +330,7 @@ Class TcPane extends TotalCommander
 	 * if can found disk info control then path is -1
 	 * 
 	 */
-	_setpathClasses()
+	_setPathClasses()
 	{
 		$class_name	:= this._class_names[this.proccesName()].path
 		$indexes	:= this._class_names[this.proccesName()].index
@@ -313,18 +414,7 @@ Class TcPane extends TotalCommander
 	_getPaneClass( $pane )
 	{
 		return % $pane == "source" ? this._getSourcePaneClass() : this._getTargetPaneClass()
-	} 
-	/*---------------------------------------
-		ACCESSORS
-	-----------------------------------------
-	*/
-	/** get TcTabs
-	 */
-	TcTabs()
-	{
-		return % this._TcTabs
-	} 
+	}
 
-
-
+	
 }

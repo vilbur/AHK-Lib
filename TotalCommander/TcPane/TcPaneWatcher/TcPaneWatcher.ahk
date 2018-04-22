@@ -1,13 +1,15 @@
 #SingleInstance force
-#NoTrayIcon
+;#NoTrayIcon
 
 global $last_win
 global $TcPaneWatcher
 global $CLSID
 
-/** Watch Total Commander
- *	Set last used control when Total Commander lost focus
+/** Watch Total Commander & Set last used control when Total Commander lost focus
  *
+ *	Script has own file because of it use OnMessage(), in this way OnMessage does not collide with others OnMessages
+ *	TcPaneWatcher is accesable via ComObject
+ * 
  * @param	{hwnd:control_class}	_focused_controls	store last used control class, key is hwnd of Total Commander (for use on multiple instances)
  *
  * @method	self	hwnd( integer $hwnd  )	
@@ -18,6 +20,12 @@ Class TcPaneWatcher
 {
 	_focused_controls := {}
 	
+	/**
+	 */
+	test()
+	{
+		MsgBox,262144,, TcPaneWatcher,2 
+	}
 	__New()
 	{
 		this._setOnWinMessage()
@@ -25,14 +33,15 @@ Class TcPaneWatcher
 	/** Set hwnd for identification of Total Commander 
 	  * @param	integer	$hwnd	hwnd of Total Commander 
 	 */
-	hwnd( $hwnd )
+	hwnd( $hwnd_tc )
 	{
-		this._focused_controls[$hwnd]	:= ""
+		this._focused_controls[$hwnd_tc]	:= ""
 		
-		$last_win := $hwnd
+		this._initFocusedControl( $hwnd_tc )
 		
 		return this
 	}
+	
 	/** Get last focused control
 	  * @param	integer	$hwnd	hwnd of Total Commander 
 	 */
@@ -40,6 +49,15 @@ Class TcPaneWatcher
 	{
 		return % this._focused_control[$hwnd_tc]
 	}
+	/**
+	 */
+	_initFocusedControl( $hwnd_tc )
+	{
+		$last_win := $hwnd_tc
+		
+		if( WinActive("ahk_id " $hwnd_tc) )
+			this._setLastFocusedControl( $hwnd_tc )
+	} 
 	/** Set callback on focus change
 	 */
 	_setOnWinMessage()

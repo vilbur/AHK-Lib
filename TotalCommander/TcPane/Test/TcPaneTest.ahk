@@ -4,12 +4,17 @@
 
 $TcPane := new TcPane()
 
-;Dump($TcPane.getSourcePaneClass(), "_getSourcePaneClass()", 1)
-;Dump($TcPane._getTargetPaneClass(), "_getTargetPaneClass()", 1)
+;sleep, 2000
+
+;$TcPane._getSourcePaneClass()
+
+
+Dump($TcPane._getSourcePaneClass(), "_getSourcePaneClass()", 1)
+Dump($TcPane._getTargetPaneClass(), "_getTargetPaneClass()", 1)
 
 
 ;Dump($TcPane.getSourcePath(), "getSourcePath()", 1)
-Dump($TcPane.getTargetPath(), "getTargetPath()", 1)
+;Dump($TcPane.getTargetPath(), "getTargetPath()", 1)
 
 ;Dump($TcPane.getPath(), "getPath('left')", 1)
 ;Dump($TcPane.getPath("right"),	"getPath('right')", 1)
@@ -22,5 +27,8 @@ Dump($TcPane.getTargetPath(), "getTargetPath()", 1)
 
 ;Dump($TcPane.activePane() , "activePane", 1)
 ;
-;$TcPane.activePane("left") 
+;
+;sleep, 2000
 ;$TcPane.activePane("right")
+;sleep, 2000
+;$TcPane.activePane("left")
