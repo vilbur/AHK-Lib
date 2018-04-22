@@ -11,7 +11,7 @@
 		TOTALCMD.EXE	TMyListBox(2-1)	TPathPanel(2-1)
 		
  */
-Class TcControlClasses extends TotalCommander
+Class TcControlClasses extends TcCore
 {
 	_process_name	:= ""
 

@@ -1,1 +1,2 @@
-# Total commander
+# TcCore  
+Core class for Tc classes  

@@ -32,6 +32,7 @@ Class TcPane extends TcControlClasses
 		
 		this._setTcPaneWatcher()		
 	}
+	
 	/** @return string path of active pane
 	 *	
 	 *	@param string pane 'left|right|source|target'
@@ -40,8 +41,9 @@ Class TcPane extends TcControlClasses
 	 */
 	getPath($pane:="source")
 	{
-		return % this._getPathFromControl(this._getPaneClass($pane))
+		return % this._getPathFromControl($pane)
 	}
+	
 	/** Set\Get active pane
 	 *	
 	 *	@param string	$side "left|right|target" pane
@@ -57,11 +59,11 @@ Class TcPane extends TcControlClasses
 				
 		if( $side!=$source_side )
 		{
-			$target_class	:= this._getPaneClass("target")
+			;$target_class	:= this._getPaneClass("target")
 
-			this._TcPaneWatcher.setLastPane( this._hwnd, $target_class )
+			this._TcPaneWatcher.setLastPane( this._hwnd, this._getPaneClass("target") )
 
-			ControlFocus, , % this._getAhkId( $target_class )
+			ControlFocus, , % this._getAhkId( "target" )
 		}
 		
 		return this
@@ -81,6 +83,17 @@ Class TcPane extends TcControlClasses
 		
 		return this  
 	}
+	/**
+	 */
+	getHwnd( $pane:="source", $path_control:="" )
+	{
+		;$class := this._getPaneClass($pane)
+		;Dump($class, $pane, 1)
+		
+		$pane_obj := this._panes[this._getPaneClass($pane)]
+			
+		return % $path_control ? $pane_obj.path.hwnd : $pane_obj.hwnd
+	} 
 	/*---------------------------------------
 		GET PPANES DATA
 	-----------------------------------------
@@ -123,9 +136,9 @@ Class TcPane extends TcControlClasses
 	}
 	/**
 	 */
-	_getPathFromControl($pane_class)
+	_getPathFromControl($pane)
 	{
-		ControlGetText, $path,, % this._getAhkId($pane_class, "path")
+		ControlGetText, $path,, % this._getAhkId($pane, "path")
 		
 		/* remove mask like "*.*" from end of path
 		 */
@@ -168,7 +181,7 @@ Class TcPane extends TcControlClasses
 	-----------------------------------------
 	*/
 	/** Get focused control (file list) when Total commander window lost focus
-	  * 
+	 *		
 	 */  
 	_setTcPaneWatcher()
 	{
@@ -194,16 +207,17 @@ Class TcPane extends TcControlClasses
 	}
 	/**
 	 */
-	_getAhkId( $pane_class, $control:="" )
+	_getAhkId( $pane, $path_control:="" )
 	{
-		$pane := this._panes[$pane_class]
+		;$hwnd := this.getHwnd( $pane, $path_control )
+		;Dump($hwnd, "hwnd", 1)
 		
-		return % "ahk_id " ( $control=="path" ? $pane.path.hwnd : $pane.hwnd )
-	} 
-	
+		;return % "ahk_id " $hwnd
+		return % "ahk_id " this.getHwnd( $pane, $path_control )		
+	}
 	/** Get side of pane
-	  *
-	  * @return string "left|right"
+	 * 
+	 * @return string "left|right"
 	 */
 	_getPaneSide($pane_class_get)
 	{
@@ -222,7 +236,6 @@ Class TcPane extends TcControlClasses
 		return % this._TcTabs
 	}
 	
-
 	/*---------------------------------------
 		FALLBACKS FOR OBSOLETE METHODS
 	-----------------------------------------

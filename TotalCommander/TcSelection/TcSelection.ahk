@@ -1,9 +1,9 @@
-﻿#Include %A_LineFile%\..\..\TotalCommander.ahk
+﻿#Include %A_LineFile%\..\..\TcCore.ahk
 #Include %A_LineFile%\..\..\TcPane\TcPane.ahk
 
 /*	Total commander Selection
 */
-Class TcSelection extends TotalCommander
+Class TcSelection extends TcCore
 {
 	_Pane 	:= new TcPane()
 
@@ -33,8 +33,8 @@ Class TcSelection extends TotalCommander
 	 */
 	getFocused($file_or_folder:="")
 	{
-		$active_listbox	:= this._Pane._getPanedHwnd()
-		$active_path	:= this._Pane.getSourcePath() ; active path does not exist if selection is in result of search E.G.: https://www.google.cz/imgres?imgurl=https%3A%2F%2Fi.ytimg.com%2Fvi%2FFvAipvYcAm0%2Fmaxresdefault.jpg&imgrefurl=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DFvAipvYcAm0&docid=-zHAQyYsPkUiGM&tbnid=PrwztdfNRjSd8M%3A&vet=10ahUKEwj40IjCj4zaAhWFF5oKHa90AEsQMwhEKAUwBQ..i&w=1280&h=720&bih=872&biw=1745&q=total%20commander%20search%20result%20feed&ved=0ahUKEwj40IjCj4zaAhWFF5oKHa90AEsQMwhEKAUwBQ&iact=mrc&uact=8
+		$active_listbox	:= this._Pane.getHwnd()
+		$active_path	:= this._Pane.getPath() ; active path does not exist if selection is in result of search E.G.: https://www.google.cz/imgres?imgurl=https%3A%2F%2Fi.ytimg.com%2Fvi%2FFvAipvYcAm0%2Fmaxresdefault.jpg&imgrefurl=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DFvAipvYcAm0&docid=-zHAQyYsPkUiGM&tbnid=PrwztdfNRjSd8M%3A&vet=10ahUKEwj40IjCj4zaAhWFF5oKHa90AEsQMwhEKAUwBQ..i&w=1280&h=720&bih=872&biw=1745&q=total%20commander%20search%20result%20feed&ved=0ahUKEwj40IjCj4zaAhWFF5oKHa90AEsQMwhEKAUwBQ&iact=mrc&uact=8
 		$index	:= this._GetFocus($active_listbox)
 		$item 	:= this._getPathOnIndex($active_listbox, $index)
 
@@ -66,8 +66,8 @@ Class TcSelection extends TotalCommander
 		$selection	:= []
 		$indexes	:= [] ; indexes of selected items
 		$folder_test	:= $file_or_folder=="folder"
-		$active_listbox	:= this._Pane._getPanedHwnd()
-		$active_path	:= this._Pane.getSourcePath() ; active path does not exist if selection is in result of search E.G.: https://www.google.cz/imgres?imgurl=https%3A%2F%2Fi.ytimg.com%2Fvi%2FFvAipvYcAm0%2Fmaxresdefault.jpg&imgrefurl=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DFvAipvYcAm0&docid=-zHAQyYsPkUiGM&tbnid=PrwztdfNRjSd8M%3A&vet=10ahUKEwj40IjCj4zaAhWFF5oKHa90AEsQMwhEKAUwBQ..i&w=1280&h=720&bih=872&biw=1745&q=total%20commander%20search%20result%20feed&ved=0ahUKEwj40IjCj4zaAhWFF5oKHa90AEsQMwhEKAUwBQ&iact=mrc&uact=8
+		$active_listbox	:= this._Pane.getHwnd()
+		$active_path	:= this._Pane.getPath() ; active path does not exist if selection is in result of search E.G.: https://www.google.cz/imgres?imgurl=https%3A%2F%2Fi.ytimg.com%2Fvi%2FFvAipvYcAm0%2Fmaxresdefault.jpg&imgrefurl=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DFvAipvYcAm0&docid=-zHAQyYsPkUiGM&tbnid=PrwztdfNRjSd8M%3A&vet=10ahUKEwj40IjCj4zaAhWFF5oKHa90AEsQMwhEKAUwBQ..i&w=1280&h=720&bih=872&biw=1745&q=total%20commander%20search%20result%20feed&ved=0ahUKEwj40IjCj4zaAhWFF5oKHa90AEsQMwhEKAUwBQ&iact=mrc&uact=8
 
 		$count_of_items	:= this._GetSelItems($active_listbox, $indexes )
 		

@@ -2,7 +2,6 @@
 
 #Include %A_LineFile%\..\..\TcPane.ahk
 
-
 global $TcPane := new TcPane()
 
 /* Get ClassNN of pane
@@ -15,6 +14,14 @@ getClassTest()
 	Dump($TcPane._getPaneClass("left"), "_getPaneClass('left')", 1)
 	Dump($TcPane._getPaneClass("right"), "_getPaneClass('right')", 1)
 }
+/**
+ */
+getPathControlHwnd()
+{
+	Dump($TcPane.getHwnd("source"), "getHwnd('source')", 1)
+	Dump($TcPane.getHwnd("source", "path"), "_getPaneClass('source')", 1)	
+
+}
 
 /* Get path of current pane
 */
@@ -22,11 +29,10 @@ getPathTest()
 {
 	Dump($TcPane.getPath("source"), "getPath('source')", 1)
 	Dump($TcPane.getPath("target"), "getPath('target')", 1)
-	
+	;
 	Dump($TcPane.getPath("left"), "getPath('left')", 1)
 	Dump($TcPane.getPath("right"), "getPath('right')", 1)
 }
-
 /* Active pane
 */
 /**
@@ -47,9 +53,9 @@ activatePaneTest()
 }
 
 /**
-	1) create test file in target pane
-	2) refresh target pane 	
-	3) delete test file
+ * 1) create test file in target pane
+ * 2) refresh target pane 	
+ * 3) delete test file
  */
 refreshPaneTest()
 {
@@ -63,8 +69,11 @@ refreshPaneTest()
 	
 	$TcPane.refresh("target")
 }
-
+/* RUN TEST
+  
+ */
 getClassTest()
+getPathControlHwnd()
 getPathTest()
 activatePaneTest()
 refreshPaneTest()
