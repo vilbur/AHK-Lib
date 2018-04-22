@@ -1,49 +1,37 @@
 #SingleInstance force
 
-#Include %A_LineFile%\..\..\_vendor\LV\LTVCustomColors.ahk
 #Include %A_LineFile%\..\Lib\Obj.ahk 
 
 global $Dump
 
-
-;/* This function is defined in launch file "/../Dump.ahk"
-;	get new class object
-;*/
-;Dump($object,$label:="",$expand:=0){
-;	if($Dump == "") 
-;		$Dump := new Dump($Hwnd_in)				
-;		
-;	$Dump.add($object, $label,$expand)
-;}
-
-
-/*
-	Class Dump
-*/
-Class Dump {
-
-	__NEW($Hwnd_in){
+/* Class Dump
+ *
+ */
+Class Dump
+{
+	__NEW($Hwnd_in)
+	{
 		this.createGUI()
 		;this._TreeView	:= DumpTreeView($Hwnd_in)
 		global DumpClassTreeView
 		this._TreeView	:= new DumpTreeView("DumpClassTreeView")
-	
 	}
-
 	/*
 		$variable := { "nested object":{"nested KEY":"nested VALUE"} }
 	*/
-	add($object,$label:="",$expand:=0){
+	add($object,$label:="",$expand:=0)
+	{
 		;this.filename	:= A_ScriptName " - "
 		
 		this.expand := $expand		
 		this._TreeView.add($object,$label,,$expand)
 	}
-	
 	/*
 	*/
-	_fillEmptyObjects($object){
-		if (IsObject($object)) {
+	_fillEmptyObjects($object)
+	{
+		if (IsObject($object))
+		{
 			;if($object.Length() == 0)
 			;	$object.insert("EMPTY")
 			;	;$object.insertAt("EMPTY","shit")				
@@ -54,16 +42,16 @@ Class Dump {
 		}
 		return %$object%
 	}
-	
 	/*
 	*/		
-	createGUI(){ 
-
+	createGUI()
+	{ 
 		Gui, Destroy
 		;Gui, -Border
 		Gui, +Resize  				
 		;Gui, +Background1c1c1c
 		gui, font, s10, Lucida console  ; Set 10-point Verdana.
+		
 		Gui, Color, #232323
 
 		Gui, Show, h1024 w1024, "Dump - " %A_ScriptName%
@@ -81,7 +69,8 @@ Class Dump {
 		ExitApp
 		
 	}
-	_setPosition( $WinTitle:="", $position_X:=0, $position_Y:=0, $win_width:=0, $win_height:=0, $monitor_number:=1  ){
+	_setPosition( $WinTitle:="", $position_X:=0, $position_Y:=0, $win_width:=0, $win_height:=0, $monitor_number:=1  )
+	{
 		if $WinTitle=
 			WinGetActiveTitle, $WinTitle
 		IfWinNotExist, %$WinTitle%
@@ -125,15 +114,15 @@ Class Dump {
 }
 
    
-/*  
-	Class DumpTreeView  
+/** Class DumpTreeView  
 */
-		  
-Class DumpTreeView {  
+Class DumpTreeView
+{  
 	 
-	/*TEST SNIPPET
+	/* TEST SNIPPET
 	*/	 
-	__NEW($hwnd){
+	__NEW($hwnd)
+	{
 		this.items	:= 1
 		this.hwnd	:= $hwnd
 		this.icons_file	:= "shell32.dll" 
@@ -144,33 +133,40 @@ Class DumpTreeView {
 		;		,"array":	309
 		;		,"arrows":	268
 		;		,"bullet":	295}
+		
 		/*
 		   REMOVE ALL ICONS
 		*/
-		this.icons_list	:= {	"object":	999
-				,"array":	999
-				,"arrows":	999
-				,"bullet":	999}		
-		this.colors	:= {	"object":	"0xFFF0DB"
-				,"array":	"0xFF6BE8"
-				,"string":	"0x7272FF"
-				;,"string":	"0x00FF00"				
-				,"integer":	"0x0099ff"}		
+		this.icons_list :=	{"object":	999
+			,"array":	999
+			,"arrows":	999
+			,"bullet":	999}
+	
+		this.colors := 	{"object":	"0xFFF0DB"
+			,"array":	"0xFF6BE8"
+			,"string":	"0x7272FF"
+			;,"string":	"0x00FF00"				
+			,"integer":	"0x0099ff"}
+
 		$IconList	:= this._getIconList()
 		
 		;$hwnd := this.hwnd
-		Gui, Add, TreeView , v%$hwnd% h1024 w2048  x8 R20  ImageList%$IconList% hwnd%$hwnd% +Background1c1c1c ; -Buttons
+		;Gui, Add, TreeView , v%$hwnd% h1024 w2048  x8 R20  ImageList%$IconList% hwnd%$hwnd% +Background1c1c1c ; -Buttons
+		Gui, Add, TreeView , v%$hwnd% h1024 w2048  x8 R20  ImageList%$IconList% hwndhTreeView +Background1c1c1c ; -Buttons		
+		
 		;;;this._setIconTest()  ;;; DEBUG - show all icons in treeView
+		
+		this._lv_colors := new CLV(hTreeView)
 
-		TV_Change( %$hwnd% )
-		 SendMessage, 0x111B , 90, 0, , ahk_id %$hwnd%
+		;TV_Change( HTV1 )
+		;TV_Change( %$hwnd% )		
+		SendMessage, 0x111B , 90, 0, , ahk_id %$hwnd%
 	}
-	
-	
 	/*
 		add 
 	*/	
-	add($object_source,$label:="", $parent := "", $expand:=0){
+	add($object_source,$label:="", $parent := "", $expand:=0)
+	{
 		this.expand := $expand
 		if (IsObject( $object_source)) {
 			
@@ -181,7 +177,7 @@ Class DumpTreeView {
 			For $type, $type_data in $object
 				;;; loop all items in object
 				For $key, $data in $type_data
-					; Loop this function again if item is object
+					;;; Loop this function again if item is object
 					if($type == "object") 
 					    this.add($data, $key , $ParentKey,  $expand)
 					
@@ -192,25 +188,10 @@ Class DumpTreeView {
 		} else 
 			this._addItem($object_source, $label, $parent )
 	}
-		
-	/*
-	*/		
-	_getObjLength($array){
-		for $key, $value in $array
-		$count++
-		return %$count%
-	}
-	
-	/*
-	*/	
-	_Array_IsArray($obj) {
-		return	!!$obj.MaxIndex()
-	}
-	
-
 	/*
 	*/
-	_getIconList(){
+	_getIconList()
+	{
 		$IconList := IL_Create(10)  ; Create an ImageList with initial capacity for 10 icons.
 		;;; LOAD ICONS FROM DLL FILE UP TO COUNT
 		;Loop 10  ; Load the ImageList with some standard system icons.
@@ -223,12 +204,10 @@ Class DumpTreeView {
 		For $icon, $index in this.icons_list
 			IL_Add($IconList, this.icons_file, $index )
 			;MsgBox,262144,, index:`n%$index%, 20
-
 		
 		;TV_SetColor($ParentKey, "#FCFCFC" )
-		TV_SetColor($ParentKey, "0xFCFCFC" )		
+		;TV_SetColor($ParentKey, "0xFCFCFC" )		
 		
-
 		return %$IconList%
 	}
 	/*
@@ -255,7 +234,8 @@ Class DumpTreeView {
 			_setIconTest($icons)
 		
 	*/
-	_setIconTest($icons:=""){
+	_setIconTest($icons:="")
+	{
 			
 		if($icons=="")
 		    $icons:= this.icons_list
@@ -263,20 +243,20 @@ Class DumpTreeView {
 		$icon_test_parent := TV_Add( this.icons_file,, " +Expand"  )
 		
 		;TV_SetColor($icon_test_parent, "0xFFBB77" )
-		TV_SetColor($icon_test_parent, "0xFFBB77" )		
+		;TV_SetColor($icon_test_parent, "0xFFBB77" )		
 
 		For $name, $index in $icons
 		{
 			;$ParentKey	:= TV_Add( "name - " this.icons[A_Index], ," Icon" A_Index )
 			$icon_test	:= TV_Add( "icon" A_Index ", index: " $index ", name: " $name, $icon_test_parent ," Icon" A_Index )					
-			TV_SetColor($icon_test, "0xFCFCFC" )
+			;TV_SetColor($icon_test, "0xFCFCFC" )
 		}
-		
 	}
 
 	/**
 	*/
-	_addObject($object_source, $label, $parent){
+	_addObject($object_source, $label, $parent)
+	{
 		if ( $parent=="" ) {   
 			$parent	:= "P" this.items++ 
 			$expand	:= " +Expand" 
@@ -286,32 +266,31 @@ Class DumpTreeView {
 		;MsgBox,262144,, % this.expand, 2
 		$expand 	:= this.expand==1 ? " +Expand" : ""
 
-		
 		$ParentKey	:= TV_Add( $label "                                   ", $parent, $icon $expand  )
 		;$ParentKey	:= TV_Add( $label "                                   ", $parent, "icon99" $expand  )					
 		
-		
-		TV_SetColor($ParentKey, this._Array_IsArray($object_source) ?	this.colors.array:  this.colors.object )		
+		this._lv_colors.ModifyNode($ParentKey, this._Array_IsArray($object_source) ?	this.colors.array:  this.colors.object)
+
 		return %$ParentKey%
 	}
-	
-
 	/*
 	*/	
-	_addItem($variable,$label,$ParentKey:=""){ 
- 		;MsgBox,262144,, variable:`n%$variable%, 20
-		$ParentKey_new	:= TV_Add( this._getLabelItem($label,10) $variable, $ParentKey, this._getIcon("arrows")  )		
-		TV_SetColor($ParentKey_new, this._getItemColor($variable,$label), "0x1C1C1C")
+	_addItem($variable, $label, $ParentKey:="")
+	{ 
+		$ParentKey_new	:= TV_Add( this._getLabelItem($label,10) $variable, $ParentKey, this._getIcon("arrows")  )
+
+		this._lv_colors.ModifyNode($ParentKey_new, this._getItemColor($variable, $label))
+
 		return %$ParentKey_new%
 	}
-
 	/*
 		get label for object and array suffixed with obj\array length
 		@example
 			"[ARRAY]	- 3"	; array	with length of 3 items
 			"{Object}	- 3"	; object	with length of 3 items
 	*/
-	_getLabelForObject($label, $object ){
+	_getLabelForObject($label, $object )
+	{
 		
 		$length := this._getObjLength($object)
 		;
@@ -329,16 +308,13 @@ Class DumpTreeView {
 		;if($label != "")
 		;	$label := $label " " ($length is integer ? $length : "0")			
 			
-		
 		return %$label%
 		;return % A_ScriptName " - " $label ":"
-		
 	}
-
 	/*
 	*/	
-	_getLabelItem($label,$lenght:=10) {
-		
+	_getLabelItem($label, $lenght:=10)
+	{	
 		StringLen, $label_length, $label
 		if($label_length == 0)
 			return ""
@@ -349,11 +325,11 @@ Class DumpTreeView {
 		return % $label ":"
 		;return % A_ScriptName " - " $label ":"
 	}
-
 	/*
 	*/
-	_getItemColor($variable,$label:=""){
-		
+	_getItemColor($variable, $label:="")
+	{
+		;return "0xFCFCFC"
 		;if($label == "key")
 			;return "0xd68251"
 		;else if($label == "value")
@@ -372,9 +348,6 @@ Class DumpTreeView {
 		;else
 			return this.colors.string ; if string
 	}
-	
-	
-	
 	/*
 	*/	
 	_sortItems($Object){
@@ -390,7 +363,55 @@ Class DumpTreeView {
 	
 		return %$sorted%
 	}
-	
+	/*
+	*/		
+	_getObjLength($array)
+	{
+		for $key, $value in $array
+		$count++
+		return %$count%
+	}
+	/*
+	*/	
+	_Array_IsArray($obj)
+	{
+		return	!!$obj.MaxIndex()
+	}
 
 	
 }	
+Class CLV {
+	Nodes := {}
+	
+	__New(hwnd){
+		this.hwnd := hwnd
+		this.MsgFn := this.WM_NOTIFY.Bind(this)
+		this.Register()
+	}
+	
+	Register(){
+		OnMessage(0x4e,this.MsgFn)
+	}
+	
+	UnRegister(){
+		OnMessage(0x4e,this.MsgFn, 0)
+	}
+	
+	ModifyNode(hNode, col){
+		this.Nodes[hNode] := col
+	}
+	
+	WM_NOTIFY(Param*){
+		static o_hwndFrom := 0, o_code := 2*A_PtrSize, o_dwDrawStage := 3*A_PtrSize, o_dwItemSpec := 16+(5*A_PtrSize), o_fg := 16+(8*A_PtrSize), o_bg := o_fg+4
+		if (NumGet(Param.2, o_hwndFrom) != this.hwnd)	; filter messages not for this treeview
+			return
+		stage := NumGet(Param.2, o_dwDrawStage, "uint")
+		if (stage == 1 && NumGet(Param.2, o_code, "int") == -12)
+			return 0x20 ;sets CDRF_NOTIFYITEMDRAW
+		node := numget(Param.2, o_dwItemSpec, "uint")
+		if (stage == 0x10001 && ObjHasKey(this.Nodes, node)){
+			NumPut(this.Nodes[node],Param.2, o_fg,"int") ;sets the background
+			;NumPut(0x0,Param.2, o_fg,"int") ;sets the foreground
+		}
+	}
+}

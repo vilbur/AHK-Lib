@@ -20,7 +20,8 @@
         http://goo.gl/no6XAS - ProgID
         http://goo.gl/obfmDc - CreateGUID()
 */
-ObjRegisterActive(Object, CLSID, Flags:=0) {
+ObjRegisterActive(Object, CLSID, Flags:=0)
+{
     static cookieJar := {}
     if (!CLSID) {
         if (cookie := cookieJar.Remove(Object)) != ""
