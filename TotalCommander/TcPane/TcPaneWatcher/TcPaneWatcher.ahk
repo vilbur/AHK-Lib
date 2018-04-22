@@ -5,7 +5,7 @@ global $TcPaneWatcher
 global $last_win
 global $CLSID
 
-/** Watch Total Commander & Set last used control when Total Commander lost focus
+/** Watch Total Commander and get source pane every time Total commander lost focus
  *
  *	Script has own file because of it use OnMessage(), in this way OnMessage does not collide with others OnMessages
  *	TcPaneWatcher is accesable via ComObject
@@ -14,7 +14,8 @@ global $CLSID
  *
  * @method	self	hwnd( integer $hwnd  )	
  * @method	string	lastPane( integer $hwnd )	get last focused control class 
- *      
+ * @method	void	exit()	exit script
+ *       
  */
 Class TcPaneWatcher
 {
@@ -24,8 +25,9 @@ Class TcPaneWatcher
 	{
 		this._setOnWinMessage()
 	}
-	/** Set hwnd for identification of Total Commander 
-	  * @param	integer	$hwnd	hwnd of Total Commander 
+	/** Set hwnd for identification of Total Commander
+	 *		
+	 *	@param	integer	$hwnd	hwnd of Total Commander 
 	 */
 	hwnd( $hwnd_tc )
 	{
@@ -35,13 +37,32 @@ Class TcPaneWatcher
 		
 		return this
 	}
-	
+	/** Set last used control
+	 *
+	 * 	@param	integer	$hwnd	hwnd of Total Commander
+	 * 	@param	string	$source_pane	ClassNN of source pane
+	 * 
+	 */
+	setLastPane( $hwnd_tc, $source_pane:="" )
+	{
+		if( ! $source_pane )
+			ControlGetFocus, $source_pane, ahk_id %$hwnd_tc%
+
+		if( this._isFileListControl( $source_pane ) )
+			this._last_panes[$hwnd_tc] := $source_pane
+	}
 	/** Get last focused pane
 	  * @param	integer	$hwnd	hwnd of Total Commander 
 	 */
 	lastPane( $hwnd_tc )
 	{
 		return % this._last_panes[$hwnd_tc]
+	}
+	/** Exit TcPaneWatcher script
+	 */
+	exit()
+	{
+		ExitApp
 	}
 	/**
 	 */
@@ -50,7 +71,7 @@ Class TcPaneWatcher
 		$last_win := $hwnd_tc
 		
 		if( WinActive("ahk_id " $hwnd_tc) )
-			this._setLastPane( $hwnd_tc )
+			this.setLastPane( $hwnd_tc )
 	} 
 	/** Set callback on focus change
 	 */
@@ -74,24 +95,16 @@ Class TcPaneWatcher
 			
 		WinActivate, ahk_id %$hwnd_tc% 
 
-		this._setLastPane( $hwnd_tc )
+		this.setLastPane( $hwnd_tc )
 		
 		WinActivate, ahk_id %$active_window%
 	}
-	/** Set last used control
-	 */
-	_setLastPane( $hwnd_tc )
-	{
-		ControlGetFocus, $source_pane, ahk_id %$hwnd_tc%
 
-		if( this._isFileListControl( $source_pane ) )
-			this._last_panes[$hwnd_tc] := $source_pane
-	}
 	/** Make sure that last control was list box
 	 */
 	_isFileListControl( $control_class )
 	{
-		return % RegExMatch( $control_class, "i)LCLListBox|TMyListBox" ) 
+		return % RegExMatch( $control_class, "LCLListBox|TMyListBox" ) 
 	} 
 	
 }
