@@ -42,12 +42,10 @@ saveTabsTest( )
 	
 	/* Load active pane to left
 	*/
-	;sleep, 2000
 	$TcTabs.save( A_ScriptDir "\save-left.tab", "left")
 	
 	/* Load active pane to right
 	*/
-	;sleep, 2000
 	$TcTabs.save( A_ScriptDir "\save-right.tab", "right")
 
 }

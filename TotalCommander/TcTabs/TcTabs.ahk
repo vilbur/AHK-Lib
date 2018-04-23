@@ -53,7 +53,7 @@ Class TcTabs
 				For $key, $value in $tab
 					$tabs_string .= $t "_" $key "=" $value "`n"
 			else
-				$tabs_string .= $key "=" $value "`n" 					
+				$tabs_string .= $t "=" $tab "`n" 					
 
 		return $tabs_string
 	} 
