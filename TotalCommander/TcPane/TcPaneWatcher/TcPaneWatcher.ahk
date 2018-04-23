@@ -10,16 +10,16 @@ global $CLSID
  *	Script has own file because of it use OnMessage(), in this way OnMessage does not collide with others OnMessages
  *	TcPaneWatcher is accesable via ComObject
  * 
- * @param	{hwnd:control_class}	_last_panes	store last used control class, key is hwnd of Total Commander (for use on multiple instances)
+ * @param	{hwnd:control_class}	_active_panes	store last used control class, key is hwnd of Total Commander (for use on multiple instances)
  *
  * @method	self	hwnd( integer $hwnd  )	
- * @method	string	lastPane( integer $hwnd )	get last focused control class 
+ * @method	string	activePane( integer $hwnd )	get last focused control class 
  * @method	void	exit()	exit script
  *       
  */
 Class TcPaneWatcher
 {
-	_last_panes := {}
+	_active_panes := {}
 	
 	__New()
 	{
@@ -31,9 +31,9 @@ Class TcPaneWatcher
 	 */
 	hwnd( $hwnd_tc )
 	{
-		this._last_panes[$hwnd_tc]	:= ""
+		this._active_panes[$hwnd_tc]	:= ""
 		
-		this._initLastPane( $hwnd_tc )
+		this._initActivePane( $hwnd_tc )
 		
 		return this
 	}
@@ -43,20 +43,20 @@ Class TcPaneWatcher
 	 * 	@param	string	$source_pane	ClassNN of source pane
 	 * 
 	 */
-	setLastPane( $hwnd_tc, $source_pane:="" )
+	setactivePane( $hwnd_tc, $source_pane:="" )
 	{
 		if( ! $source_pane )
 			ControlGetFocus, $source_pane, ahk_id %$hwnd_tc%
 
 		if( this._isFileListControl( $source_pane ) )
-			this._last_panes[$hwnd_tc] := $source_pane
+			this._active_panes[$hwnd_tc] := $source_pane
 	}
 	/** Get last focused pane
 	  * @param	integer	$hwnd	hwnd of Total Commander 
 	 */
-	lastPane( $hwnd_tc )
+	activePane( $hwnd_tc )
 	{
-		return % this._last_panes[$hwnd_tc]
+		return % this._active_panes[$hwnd_tc]
 	}
 	/** Exit TcPaneWatcher script
 	 */
@@ -66,12 +66,12 @@ Class TcPaneWatcher
 	}
 	/**
 	 */
-	_initLastPane( $hwnd_tc )
+	_initActivePane( $hwnd_tc )
 	{
 		$last_win := $hwnd_tc
 		
 		if( WinActive("ahk_id " $hwnd_tc) )
-			this.setLastPane( $hwnd_tc )
+			this.setactivePane( $hwnd_tc )
 	} 
 	/** Set callback on focus change
 	 */
@@ -95,7 +95,7 @@ Class TcPaneWatcher
 			
 		WinActivate, ahk_id %$hwnd_tc% 
 
-		this.setLastPane( $hwnd_tc )
+		this.setactivePane( $hwnd_tc )
 		
 		WinActivate, ahk_id %$active_window%
 	}

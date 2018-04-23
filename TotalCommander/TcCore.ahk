@@ -4,7 +4,14 @@ Class TcCore
 {
 	_process_name	:= ""
 	_hwnd	:= ""
-	
+
+	/**
+	 */
+	_init()
+	{
+		this._setProcessName()
+		this._setHwnd()
+	}
 	/**
 	 */
 	hwnd()
@@ -16,13 +23,6 @@ Class TcCore
 	proccesName()
 	{
 		return % this._process_name
-	}
-	/**
-	 */
-	_init()
-	{
-		this._setProcessName()
-		this._setHwnd()
 	}
 	/**
 	 */

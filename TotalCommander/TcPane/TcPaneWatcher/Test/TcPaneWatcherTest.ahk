@@ -83,11 +83,11 @@ ShellMessage(wParam, lParam)
 		/** LOG LAST CONTROL TO FILE 
 		 */
 		WinGetTitle, $win_title, ahk_id %$last_win%
-		;FileAppend, % (InStr( $win_title, "x64" )?"64bit":"32bit") ": " $TcPaneWatcherCom.lastPane($last_win) "`n", %A_LineFile%\..\log.txt
+		;FileAppend, % (InStr( $win_title, "x64" )?"64bit":"32bit") ": " $TcPaneWatcherCom.activePane($last_win) "`n", %A_LineFile%\..\log.txt
 		
 		/** MESsAGE LAST CONTROL TO FILE 
 		 */
-		MsgBox,262144,, % (InStr( $win_title, "x64" )?"64bit":"32bit") ": " $TcPaneWatcherCom.lastPane($last_win),1
+		MsgBox,262144,, % (InStr( $win_title, "x64" )?"64bit":"32bit") ": " $TcPaneWatcherCom.activePane($last_win),1
 	
 		$last_win := ""
 	}

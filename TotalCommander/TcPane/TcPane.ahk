@@ -61,7 +61,7 @@ Class TcPane extends TcControlClasses
 		{
 			;$target_class	:= this._getPaneClass("target")
 
-			this._TcPaneWatcher.setLastPane( this._hwnd, this._getPaneClass("target") )
+			this._TcPaneWatcher.setactivePane( this._hwnd, this._getPaneClass("target") )
 
 			ControlFocus, , % this._getAhkId( "target" )
 		}
@@ -109,7 +109,7 @@ Class TcPane extends TcControlClasses
 		if( RegExMatch( $pane, "i)left|right" ) )
 			return % this._getPaneClassBySide($pane)
 		
-		$source_pane := this._TcPaneWatcher.lastPane(this._hwnd)
+		$source_pane := this._TcPaneWatcher.activePane(this._hwnd)
 		
 		return % $pane=="source" ? $source_pane : this._getTargetPaneClass($source_pane)
 	}
@@ -202,7 +202,7 @@ Class TcPane extends TcControlClasses
 		$hwnd := this._hwnd
 		
 		Run, %A_LineFile%\..\TcPaneWatcher\TcPaneWatcher.ahk %$hwnd% %$CLSID%
-
+		sleep, 50
 		this._setTcPaneWatcher()
 	}
 	/**
@@ -267,5 +267,14 @@ Class TcPane extends TcControlClasses
 	
 }
 
+OnExit("KillTcPaneWatcher")
 
+KillTcPaneWatcher(ExitReason, ExitCode)
+{
+	try
+	{
+		ComObjActive($CLSID).exit()
+	}	
+	
+}
 
