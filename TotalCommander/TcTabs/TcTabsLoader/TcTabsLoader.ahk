@@ -16,9 +16,15 @@ Class TcTabsLoader extends TcCore
 		this._setIniFile( "usercmd.ini" )		
 	}
 	/** load tabs file
+	 *		
+	 * @param	string	$tab_file_path	path to *.tab file
+	 * @param	string	$side	"left|right|void" load tabs to side, load to active if param empty
 	 */
 	load( $tab_file_path, $side:="" )
 	{
+		if( ! FileExist($tab_file_path) )
+			return
+		
 		if( $side )
 			 $tab_file_path := this._correntSidesOfTabs( $tab_file_path, $side )
 		
@@ -38,7 +44,7 @@ Class TcTabsLoader extends TcCore
 	 */
 	_correntSidesOfTabs( $tab_file_path, $side )
 	{
-		if( $side=="Active" || ! this._hasTabFileBothSides( $tab_file_path ) )
+		if( ! RegExMatch( $side, "i)left|right" ) || ! this._hasTabFileBothSides( $tab_file_path ) )
 			return  $tab_file_path
 		
 		$current_side := this._getSideOfSourcePane()

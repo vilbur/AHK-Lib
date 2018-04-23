@@ -17,10 +17,13 @@ Class TcTabsGetter extends TcCore
 	 * 
 	 * @param	string	$side	"left|right|void" get tabs from both sides if param empty
 	 */
-	getTabs($side:="left,right")
+	getTabs($side:="")
 	{
 		$tabs_both := {}
 
+		if( ! $side )
+			$side := "left,right"
+		
 		this.saveConfig()
 		
 		if( $side=="left,right" )
