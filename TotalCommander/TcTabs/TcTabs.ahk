@@ -17,6 +17,22 @@ Class TcTabs
 	{
 		return % this._TcTabsGetter.getTabs($side)
 	}
+	/** Save tabs file
+	 *		
+	 * @param	string	$tab_file_path	path to *.tab file
+	 * @param	string	$side	"left|right|void" Save tabs from side, save both sides if param empty
+	 */
+	save( $tab_file_path, $side:="" )
+	{
+		if( ! $side )
+			$side := "left,right"
+			
+		Loop, parse, $side , `,
+			$tabs .= ( A_Index==1? "[activetabs]" : "[inactivetabs]" ) "`n" this._joinTabsToString( this.get(A_LoopField) )
+		
+		FileDelete, %$tab_file_path% 
+		FileAppend, %$tabs%, %$tab_file_path% 
+	}
 	/** Load tabs file
 	 *		
 	 * @param	string	$tab_file_path	path to *.tab file
@@ -26,5 +42,20 @@ Class TcTabs
 	{
 		this._TcTabsLoader.load( $tab_file_path, $side )
 	}
+
+	
+	/**
+	 */
+	_joinTabsToString( $tabs )
+	{
+		For $t, $tab in $tabs
+			if( isObject($tab) )
+				For $key, $value in $tab
+					$tabs_string .= $t "_" $key "=" $value "`n"
+			else
+				$tabs_string .= $key "=" $value "`n" 					
+
+		return $tabs_string
+	} 
 	
 }
