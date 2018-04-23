@@ -1,7 +1,7 @@
 #SingleInstance force
 #NoTrayIcon
 
-#Include %A_LineFile%\..\..\..\TcActivate\TcSaveWindow.ahk 
+#Include %A_LineFile%\..\..\..\TcActivate\TcActivate.ahk 
 
 global $TcPaneWatcher
 global $last_win
