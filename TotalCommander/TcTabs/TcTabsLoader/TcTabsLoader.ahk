@@ -44,7 +44,7 @@ Class TcTabsLoader extends TcCore
 	 */
 	_correntSidesOfTabs( $tab_file_path, $side )
 	{
-		if( ! RegExMatch( $side, "i)left|right" ) || ! this._hasTabFileBothSides( $tab_file_path ) )
+		if( this._hasOnlyActiveTabs( $tab_file_path ) || ! RegExMatch( $side, "i)left|right" ) )
 			return  $tab_file_path
 		
 		$current_side := this._getSideOfSourcePane()
@@ -77,11 +77,11 @@ Class TcTabsLoader extends TcCore
 	
 	/**
 	 */
-	_hasTabFileBothSides( $tab_file_path )
+	_hasOnlyActiveTabs( $tab_file_path )
 	{
-		IniRead, $inactive_tabs, %$tab_file_path%, inactivetabs, 0
-		
-		return $inactive_tabs ? true : false
+		IniRead, $inactive_tabs, %$tab_file_path%, inactivetabs
+
+		return ! $inactive_tabs || $inactive_tabs=="ERROR" ? true : false
 	}  
 	/**
 	 */

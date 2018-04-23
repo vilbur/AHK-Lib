@@ -14,10 +14,10 @@ $TcTabsLoader.load( $tab_file_path )
 
 /* Load active pane to left
 */
-sleep, 2000
-$TcTabsLoader.load( $tab_file_path, "left")
+;sleep, 2000
+;$TcTabsLoader.load( $tab_file_path, "left")
 
 /* Load active pane to right
 */
-sleep, 2000
-$TcTabsLoader.load( $tab_file_path, "right")
+;sleep, 2000
+;$TcTabsLoader.load( $tab_file_path, "right")

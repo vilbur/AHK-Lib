@@ -21,7 +21,7 @@ Class TcTabsGetter extends TcCore
 	{
 		$tabs_both := {}
 
-		if( ! $side )
+		if( ! RegExMatch( $side, "i)left|right") )
 			$side := "left,right"
 		
 		this.saveConfig()
