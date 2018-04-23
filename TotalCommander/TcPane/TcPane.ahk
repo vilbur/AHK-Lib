@@ -9,7 +9,6 @@ $CLSID	:= "{6B39CAA1-A320-4CB0-8DB4-352AA81E460E}"
 */
 Class TcPane extends TcControlClasses
 {
-	;_TcTabs 	:= new TcTabs().Parent(this)
 	_TcPaneWatcher	:= ""
 	_panes	:= {}	
 
@@ -225,16 +224,7 @@ Class TcPane extends TcControlClasses
 			if( $pane_class==$pane_class_get )
 				return A_Index == 1 ? "right" : "left"
 	}
-	/*---------------------------------------
-		ACCESSORS
-	-----------------------------------------
-	*/
-	/** get TcTabs
-	 */
-	TcTabs()
-	{
-		return % this._TcTabs
-	}
+
 	
 	/*---------------------------------------
 		FALLBACKS FOR OBSOLETE METHODS

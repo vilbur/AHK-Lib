@@ -6,6 +6,7 @@ Class TcTabsLoader extends TcCore
 	_usercmd_ini	:= "" ; save commands
 	_cmd_name	:= "em_TcTabsLoader_load-tabs"
 	_command_exists	:= 0
+	_TcPane	:= ""
 	
 	/** _setTabsPath
 	 */
@@ -16,8 +17,11 @@ Class TcTabsLoader extends TcCore
 	}
 	/** load tabs file
 	 */
-	load( $tab_file_path )
+	load( $tab_file_path, $side:="" )
 	{
+		if( $side )
+			 $tab_file_path := this._correntSidesOfTabs( $tab_file_path, $side )
+		
 		this._setCommandExistsTest()
 		this._editCommandLoadTabs("OPENTABS """ $tab_file_path """")
 		sleep, 100
@@ -25,7 +29,68 @@ Class TcTabsLoader extends TcCore
 		this._restartCommanderIfFirstTimeLoad()
 		this._executeShortcut()
 	}
+	/*---------------------------------------
+		2 -SIDES TAB FILE
+	-----------------------------------------
+	*/
+	
+	/** Load tabs always to one side if *.tab contains both sides
+	 */
+	_correntSidesOfTabs( $tab_file_path, $side )
+	{
+		if( $side=="Active" || ! this._hasTabFileBothSides( $tab_file_path ) )
+			return  $tab_file_path
+		
+		$current_side := this._getSideOfSourcePane()
+		
+		if( $side==$current_side )
+			return  $tab_file_path
+	
+		$temp_tabs_file = %temp%\temp_tabs_file.tab
+			
+		this._switchTabs( $tab_file_path, $temp_tabs_file )	
 
+		return  $temp_tabs_file
+	}
+	/**
+	 */
+	_switchTabs( $tab_file_path, $temp_tabs_file )
+	{
+		FileDelete, %$temp_tabs_file%
+		
+		FileRead, $tabs_content, %$tab_file_path%
+		 
+		$tabs_content := RegExReplace( $tabs_content, "\[activetabs\]", "[inactivetabs_temp]" )
+		$tabs_content := RegExReplace( $tabs_content, "\[inactivetabs\]", "[activetabs]" )
+		$tabs_content := RegExReplace( $tabs_content, "\[inactivetabs_temp\]", "[inactivetabs]" )  				
+		 
+		FileAppend, %$tabs_content%, %$temp_tabs_file%
+		
+		sleep, 500
+	}  
+	
+	/**
+	 */
+	_hasTabFileBothSides( $tab_file_path )
+	{
+		IniRead, $inactive_tabs, %$tab_file_path%, inactivetabs, 0
+		
+		return $inactive_tabs ? true : false
+	}  
+	/**
+	 */
+	_getSideOfSourcePane()
+	{
+		if( ! this._TcPane )
+			this._TcPane := new TcPane()
+		
+		return % this._TcPane.activePane()
+	}  
+	
+	/*---------------------------------------
+		COMMAND
+	-----------------------------------------
+	*/
 	/** Edit command in wincmd.ini
 		This command is loading tab files
 	 */
@@ -33,7 +98,6 @@ Class TcTabsLoader extends TcCore
 	{
 		IniWrite, %$open_tabs_cmd%, % this._usercmd_ini, % this._cmd_name, cmd
 	}
-	
 	/** create command in wincmd.ini
 	 */
 	createCommandRunTabSwitcher()
@@ -42,7 +106,10 @@ Class TcTabsLoader extends TcCore
 		IniWrite, % A_ScriptDir "\TabsSwitcher.ahk",	% this._usercmd_ini, % this._cmd_run_tabswitcher, cmd
 		IniWrite, %$param%,	% this._usercmd_ini, % this._cmd_run_tabswitcher, param		
 	}
-	
+	/*---------------------------------------
+		SHORTCUT
+	-----------------------------------------
+	*/
 	/** create keyboard shortcut to run this._cmd_name command
 		create keyboard shortcut in section "ShortcutsWin"
 		section "ShortcutsWin" runs keyboard shortcuts with win key 
@@ -59,15 +126,17 @@ Class TcTabsLoader extends TcCore
 	{
 		IniWrite, %$value%, % this._wincmd_ini, %$section%, %$key%
 	}
-	
 	/**
 		https://autohotkey.com/docs/commands/WinExist.htm#function
 	 */
 	_executeShortcut()
 	{
-
 		ControlSend,, {LWin down}{Ctrl down}{Alt down}{Shift down}{F9}{LWin up}{Ctrl up}{Alt up}{Shift up}, % this.ahkId()
 	}
+	/*---------------------------------------
+		FIRST TIME EXECUTION
+	-----------------------------------------
+	*/
 	/**
 	 */
 	_setCommandExistsTest()
@@ -75,8 +144,7 @@ Class TcTabsLoader extends TcCore
 		IniRead, $command_exists, % this._usercmd_ini, % this._cmd_name, cmd, 0
 		
 		this._command_exists
-	}  
- 
+	} 
 	/** Total Commander needs restart, if command does not exists yet
 	 */
 	_restartCommanderIfFirstTimeLoad()
@@ -107,8 +175,6 @@ Class TcTabsLoader extends TcCore
 		this._init()
 	}  
 	
-	
-	
-	
+
 	
 }

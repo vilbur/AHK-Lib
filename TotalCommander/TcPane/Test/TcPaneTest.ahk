@@ -33,11 +33,18 @@ getPathTest()
 	Dump($TcPane.getPath("left"), "getPath('left')", 1)
 	Dump($TcPane.getPath("right"), "getPath('right')", 1)
 }
-/* Active pane
+
+/* Get Active pane
 */
-/**
- */
-activatePaneTest()
+getActivatePaneTest()
+{
+	Dump($TcPane.activePane(), "activePane()", 1)
+}
+
+
+/* Set Active pane
+*/
+setActivatePaneTest()
 {
 	sleep, 1000
 	$TcPane.activePane("right")
@@ -72,8 +79,9 @@ refreshPaneTest()
 /* RUN TEST
   
  */
-getClassTest()
-getPathControlHwnd()
-getPathTest()
-activatePaneTest()
-refreshPaneTest()
+;getClassTest()
+;getPathControlHwnd()
+;getPathTest()
+getActivatePaneTest()
+;setActivatePaneTest()
+;refreshPaneTest()
