@@ -1,6 +1,8 @@
 #SingleInstance force
 ;#NoTrayIcon
 
+#Include %A_LineFile%\..\..\..\TcActivate\TcSaveWindow.ahk 
+
 global $TcPaneWatcher
 global $last_win
 global $CLSID
@@ -19,8 +21,9 @@ global $CLSID
  */
 Class TcPaneWatcher
 {
-	_active_panes := {}
-	
+	_active_panes	:= {}
+	_TcActivate	:= new TcActivate()
+
 	__New()
 	{
 		this._setOnWinMessage()
@@ -33,6 +36,8 @@ Class TcPaneWatcher
 	{
 		this._active_panes[$hwnd_tc]	:= ""
 		
+		;this._TcActivate.hwnd(this._hwnd)
+
 		this._initActivePane( $hwnd_tc )
 		
 		return this
@@ -43,11 +48,11 @@ Class TcPaneWatcher
 	 * 	@param	string	$source_pane	ClassNN of source pane
 	 * 
 	 */
-	setactivePane( $hwnd_tc, $source_pane:="" )
+	setActivePane( $hwnd_tc, $source_pane:="" )
 	{
 		if( ! $source_pane )
 			ControlGetFocus, $source_pane, ahk_id %$hwnd_tc%
-
+		;MsgBox,262144,source_pane, %$source_pane%,3
 		if( this._isFileListControl( $source_pane ) )
 			this._active_panes[$hwnd_tc] := $source_pane
 	}
@@ -71,7 +76,7 @@ Class TcPaneWatcher
 		$last_win := $hwnd_tc
 		
 		if( WinActive("ahk_id " $hwnd_tc) )
-			this.setactivePane( $hwnd_tc )
+			this.setActivePane( $hwnd_tc )
 	} 
 	/** Set callback on focus change
 	 */
@@ -91,13 +96,11 @@ Class TcPaneWatcher
 	  */
 	_onTotalCommanderLostFocus( $hwnd_tc )
 	{
-		$active_window := WinActive("A")
-			
-		WinActivate, ahk_id %$hwnd_tc% 
-
-		this.setactivePane( $hwnd_tc )
+		this._TcActivate.activate($hwnd_tc)
 		
-		WinActivate, ahk_id %$active_window%
+		this.setActivePane( $hwnd_tc )
+				
+		this._TcActivate.deactivate($hwnd_tc)
 	}
 
 	/** Make sure that last control was list box
@@ -120,6 +123,7 @@ onWindowChange(wParam, lParam)
 		
 	if( $last_class == "TTOTAL_CMD" )
 	{
+		;MsgBox,262144,, Lost Focus,2 
 		$TcPaneWatcher._onTotalCommanderLostFocus( $last_win )
 		
 		$last_win := ""

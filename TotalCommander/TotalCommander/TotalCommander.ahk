@@ -14,7 +14,6 @@ Class TotalCommander extends TcCore
 		this._wincmd_ini	:= $wincmd_ini
 		
 		this._init()
-
 	}
 	/** activate
 	*/

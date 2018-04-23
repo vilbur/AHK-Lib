@@ -20,10 +20,10 @@ Class TcPane extends TcControlClasses
 	 *	,"path":	{"class":	string
 	 *	,"hwnd":	integer}}}
 	 */
-
 	__New()
 	{
 		this._init()
+		
 		this._setPaneClasses()
 		this._setPathClasses()
 		this._setListBoxAndPathToPair()
