@@ -9,7 +9,7 @@ $CLSID	:= "{6B39CAA1-A320-4CB0-8DB4-352AA81E460E}"
 */
 Class TcPane extends TcControlClasses
 {
-	_TcTabs 	:= new TcTabs().Parent(this)
+	;_TcTabs 	:= new TcTabs().Parent(this)
 	_TcPaneWatcher	:= ""
 	_panes	:= {}	
 
@@ -171,7 +171,7 @@ Class TcPane extends TcControlClasses
 	 */
 	_getControlHwnd( $class_nn )
 	{
-		ControlGet, $hwnd, Hwnd,, %$class_nn%,  % this.hwnd()
+		ControlGet, $hwnd, Hwnd,, %$class_nn%,  % this.ahkId()
 
 		return $hwnd 
 	}

@@ -3,23 +3,19 @@
 */
 Class TotalCommander extends TcCore
 {
-	_wincmd_ini	:= ""
 	_previous_vindow	:= {}
 
 	/**
 	 */
 	__New()
 	{
-		$wincmd_ini	= %Commander_Path%\wincmd.ini		
-		this._wincmd_ini	:= $wincmd_ini
-		
 		this._init()
 	}
 	/** activate
 	*/
 	activate()
 	{
-		WinActivate, % this.hwnd()
+		WinActivate, % this.ahkId()
 	}
 	/** Get\Set title to window
 	 */
@@ -76,14 +72,7 @@ Class TotalCommander extends TcCore
 		WinGet, ExStyle, ExStyle, A
 		return (ExStyle & 0x8) == 8 ? true : false
 	} 
-	/**
-	 */
-	saveConfig()
-	{
-		SendMessage  1075, 580, 0, , % "ahk_id " this._hwnd
-		
-		return this
-	} 
+
 
 
 }

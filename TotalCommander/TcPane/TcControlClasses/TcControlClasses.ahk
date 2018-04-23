@@ -47,7 +47,7 @@ Class TcControlClasses extends TcCore
 		While, $last_index > 0
 		{
 			$last_index := this._searchExistingControl( $class_name, $last_index )
-			ControlGetText, $text , % $class_name $last_index , % this.hwnd()
+			ControlGetText, $text , % $class_name $last_index , % this.ahkId()
 
 			if( $text )
 				$last_index--
@@ -85,7 +85,7 @@ Class TcControlClasses extends TcCore
 	 */
 	_isDiskInfoControl( $class_name )
 	{
-		ControlGetText, $text , %$class_name%, % this.hwnd()
+		ControlGetText, $text , %$class_name%, % this.ahkId()
 
 		return RegExMatch( $text, "i)(^ftp|free$)" )
 	} 
@@ -107,7 +107,7 @@ Class TcControlClasses extends TcCore
 	 */
 	_isControlExists($class_nn)
 	{
-		ControlGet, $is_visible, Visible, , %$class_nn%,  % this.hwnd()
+		ControlGet, $is_visible, Visible, , %$class_nn%,  % this.ahkId()
 
 		return $is_visible
 	}
@@ -119,9 +119,9 @@ Class TcControlClasses extends TcCore
 	{
 		$panes_nn	:= this._getPanesClasses()
 			
-		ControlGetPos, $list_X,, $list_W, , % $panes_nn[1], % this.hwnd()
+		ControlGetPos, $list_X,, $list_W, , % $panes_nn[1], % this.ahkId()
 		
-		ControlGetPos, $path_X,, $path_W, , % this._class_nn[$panes_nn[1]], % this.hwnd()		
+		ControlGetPos, $path_X,, $path_W, , % this._class_nn[$panes_nn[1]], % this.ahkId()		
 		
 		if( Round($list_X  $list_W+, -2) != Round($path_X +  $path_W, -2) )
 		{

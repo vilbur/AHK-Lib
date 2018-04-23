@@ -1,5 +1,5 @@
 #SingleInstance force
-;#NoTrayIcon
+#NoTrayIcon
 
 #Include %A_LineFile%\..\..\..\TcActivate\TcSaveWindow.ahk 
 

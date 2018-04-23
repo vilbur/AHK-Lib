@@ -1,3 +1,2 @@
 #Include %A_LineFile%\..\..\TcCore.ahk
 #Include %A_LineFile%\..\TcControlClasses\TcControlClasses.ahk
-#Include %A_LineFile%\..\TcTabs\TcTabs.ahk
